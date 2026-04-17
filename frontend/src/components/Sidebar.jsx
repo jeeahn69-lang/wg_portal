@@ -1,39 +1,108 @@
-// frontend/src/components/Sidebar.jsx
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from '@inertiajs/react';
+
+const MENU_DATA = [
+  { 
+    icon: '🏡', 
+    label: '마을정보', 
+    subMenus: [
+      { label: '마을관리카드', href: '/village/card/' },
+      { label: '마을매출정보', href: '/village/sales/' }
+    ]
+  },
+  { 
+    icon: '💰', 
+    label: '보조금사업', 
+    subMenus: [
+      { label: '생생마을', href: '#' },
+      { label: '파워빌리지', href: '#' },
+      { label: '아파트공동체', href: '#' },
+      { label: '마을특성화', href: '#' }
+    ]
+  },
+  { 
+    icon: '📝', 
+    label: '나의업무', 
+    subMenus: [
+      { label: '일일업무', href: '#' },
+      { label: '휴가관리', href: '#' }
+    ]
+  },
+  { 
+    icon: '📋', 
+    label: '게시판', 
+    subMenus: [
+      { label: '공지사항', href: '#' }
+    ]
+  },
+  { 
+    icon: '⚙️', 
+    label: '시스템관리', 
+    subMenus: [
+      { label: '사용자관리', href: '#' },
+      { label: '코드관리', href: '#' }
+    ]
+  },
+];
 
 export default function Sidebar() {
+  const [openMenus, setOpenMenus] = useState({
+    '마을정보': true,
+  });
+
+  const toggleMenu = (label) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [label]: !prev[label]
+    }));
+  };
+
   return (
     <div className="w-full h-full flex flex-col py-8 px-6">
       {/* 로고 영역 */}
-      <div className="flex items-center gap-3 mb-12 px-2 flex-shrink-0">
+      <Link href="/village/dashboard/" className="flex items-center gap-3 mb-12 px-2 flex-shrink-0 cursor-pointer">
         <div className="w-10 h-10 bg-[#1A73E8] rounded-xl flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
           W
         </div>
         <span className="text-xl font-bold tracking-tight text-gray-900 whitespace-nowrap">
           Wanju Portal
         </span>
-      </div>
+      </Link>
 
       {/* 메뉴 영역 */}
-      <nav className="flex-1 space-y-2 overflow-y-auto">
-        <div className="bg-[#1A73E8] text-white px-5 py-3.5 rounded-2xl flex items-center gap-4 shadow-md cursor-pointer transition-all">
-          <span className="text-xl">📊</span>
-          <span className="font-bold text-[15px]">대시보드</span>
-        </div>
-
-        {[
-          { icon: '🏡', label: '마을정보' },
-          { icon: '💰', label: '보조금사업' },
-          { icon: '📝', label: '나의업무' },
-          { icon: '📋', label: '게시판' },
-          { icon: '⚙️', label: '시스템관리' },
-        ].map((menu) => (
-          <div key={menu.label} className="flex items-center justify-between px-5 py-3.5 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-2xl transition-all cursor-pointer group">
-            <div className="flex items-center gap-4">
-              <span className="text-xl opacity-80">{menu.icon}</span>
-              <span className="font-bold text-[15px]">{menu.label}</span>
+      <nav className="flex-1 space-y-1 overflow-y-auto pr-2">
+        {MENU_DATA.map((menu) => (
+          <div key={menu.label} className="flex flex-col">
+            <div 
+              onClick={() => toggleMenu(menu.label)}
+              className={`flex items-center justify-between px-5 py-3.5 rounded-2xl transition-all cursor-pointer group ${openMenus[menu.label] ? 'text-gray-900 bg-blue-50/50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}
+            >
+              <div className="flex items-center gap-4">
+                <span className="text-xl opacity-80">{menu.icon}</span>
+                <span className="font-bold text-[15px]">{menu.label}</span>
+              </div>
+              <span className={`text-xs transition-transform duration-300 ${openMenus[menu.label] ? 'rotate-180 text-[#1A73E8]' : 'opacity-30 group-hover:opacity-100'}`}>
+                ▼
+              </span>
             </div>
-            <span className="text-xs opacity-30 group-hover:opacity-100 transition-opacity">▼</span>
+            
+            {/* 서브 메뉴 */}
+            <div 
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${openMenus[menu.label] ? 'max-h-64 opacity-100 mb-2' : 'max-h-0 opacity-0'}`}
+            >
+              <div className="pl-14 pr-4 py-1.5 flex flex-col gap-1 mt-1">
+                {menu.subMenus.map((subMenu) => (
+                  <Link 
+                    key={subMenu.label} 
+                    href={subMenu.href}
+                    className="group cursor-pointer text-[14px] text-gray-500 hover:text-[#1A73E8] hover:bg-blue-50/30 rounded-lg px-2 py-2 flex items-center gap-2.5 transition-all"
+                  >
+                    <div className="w-1.5 h-1.5 bg-gray-300 rounded-full group-hover:bg-[#1A73E8] group-hover:scale-125 transition-all"></div>
+                    <span className="font-medium">{subMenu.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         ))}
       </nav>

@@ -23,10 +23,10 @@ export default function Dashboard() {
       {/* 1. 상단 타이틀 및 경로 섹션 */}
       <div className="flex items-center justify-between mb-12 p-10 bg-white rounded-3xl shadow-sm border border-gray-100">
         <div>
-          <h1 className="text-4xl font-extrabold text-gray-950 tracking-tighter">📊 관리자 대시보드</h1>
+          <h1 className="text-4xl font-extrabold text-gray-950 tracking-tighter">📊 Summary Information</h1>
           <p className="text-lg text-gray-500 mt-2 font-medium">완주군 마을통합마케팅 포털의 실시간 현황</p>
         </div>
-        
+
         {/* 첨부 이미지 스타일의 경로 표시기 추가 */}
         <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
           <span>Home</span>

@@ -24,4 +24,7 @@ urlpatterns = [
 
     # 7. 게시판 목록
     path('board/', views.board_list, name='board_list'),
+
+    # 8. 마을매출정보
+    path('sales/', views.village_sales, name='village_sales'),
 ]
