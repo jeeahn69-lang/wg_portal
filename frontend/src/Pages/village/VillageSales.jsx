@@ -8,6 +8,7 @@ export default function VillageSales() {
         { id: 2, eubmyeon: '삼례읍', village: '학동마을', corporation: '학동마을 영농조합', ceo: '박민경', type: '소득창출형', product: '참기름, 김부각', revenue: '84,200' },
         { id: 3, eubmyeon: '삼례읍', village: '후와마을', corporation: '완주딸기랜드', ceo: '이문택', type: '소득창출형', product: '딸기잼, 냉동딸기', revenue: '210,500' },
         { id: 4, eubmyeon: '봉동읍', village: '제촌마을', corporation: '제촌마을회', ceo: '송호석', type: '마을화합형', product: '진천송씨 연잎국수', revenue: '45,000' },
+        { id: 5, eubmyeon: '구이면', village: '안덕마을', corporation: '안덕파워', ceo: '입옥섭', type: '소득창출형', product: '체험, 숙박', revenue: '1.043.000' },
     ];
 
     return (
