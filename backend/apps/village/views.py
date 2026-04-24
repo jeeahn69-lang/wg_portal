@@ -11,8 +11,12 @@ def village_list(request):
     })
 
 def village_card(request):
-    # 'VillageCardDetail'은 앞서 코딩한 .jsx 파일의 이름과 일치해야 합니다.
+    # 'village/VillageCard'는 Pages/village/VillageCard.jsx 파일을 의미합니다.
     return inertia_render(request, 'village/VillageDetail')
+
+def village_info(request):
+    # 'village/VillageInfo'는 Pages/village/VillageInfo.jsx 파일을 의미합니다.
+    return inertia_render(request, 'village/VillageInfo')
 
 def dashboard(request):
     # 'village/Dashboard'는 Pages/village/Dashboard.jsx 파일을 의미합니다.

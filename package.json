@@ -1,19 +1,21 @@
 {
   "name": "wg_portal",
-   "private": true,
+  "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",        
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "preview": "npm run preview --prefix frontend"
   },
   "dependencies": {
     "@inertiajs/react": "^1.0.0",
+    "lucide-react": "^1.9.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.0",
-    "vite": "^5.0.0"
+    "vite": "^8.0.8"
   }
 }

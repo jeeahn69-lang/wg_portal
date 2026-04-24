@@ -1,7 +1,8 @@
-// frontend/src/Pages/Dashboard.jsx
 import React from 'react';
 import MainLayout from "../../layouts/MainLayout";
-import Card from "../../components/Card";
+import StatsCard from "../../components/StatsCard";
+// import { Card, CardContent } from "@/components/ui/card";
+
 
 export default function Dashboard() {
   const stats = [
@@ -21,7 +22,7 @@ export default function Dashboard() {
   return (
     <MainLayout>
       {/* 1. 상단 타이틀 및 경로 섹션 */}
-      <div className="flex items-center justify-between mb-12 p-10 bg-white rounded-3xl shadow-sm border border-gray-100">
+      <div className="flex items-center justify-between mb-12 p-8 bg-white rounded-3xl border border-blue-100 shadow-xl transition-all">
         <div>
           <h1 className="text-4xl font-extrabold text-gray-950 tracking-tighter">📊 Summary Information</h1>
           <p className="text-lg text-gray-500 mt-2 font-medium">완주군 마을통합마케팅 포털의 실시간 현황</p>
@@ -40,17 +41,17 @@ export default function Dashboard() {
       {/* 2. 요약 카드 그리드 (구조 유지, 컴포넌트 디자인 변경) */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
         {stats.map((item, index) => (
-          <Card key={index} {...item} />
+          <StatsCard key={index} {...item} />
         ))}
       </div>
 
       {/* 3. 하단 콘텐츠 영역 (테이블 디자인 변경) */}
-      <div className="bg-white rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-gray-100 p-10 mt-10 space-y-8">
+      <div className="bg-white rounded-3xl border border-blue-100 shadow-xl p-10 mt-10 space-y-8 transition-all">
         <div className="flex justify-between items-center border-b border-gray-100 pb-6">
           <h3 className="text-2xl font-bold text-gray-950 tracking-tight">
             <span className="font-mono text-gray-400 mr-1 opacity-60">|</span> 최근 게시글
           </h3>
-          <button className="text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors bg-blue-50 px-5 py-2.5 rounded-xl">전체보기 →</button>
+          <button className="text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors px-5 py-2.5 rounded-xl shadow-lg shadow-blue-200">전체보기 →</button>
         </div>
 
         {/* 첨부 이미지 테이블 스타일 적용 */}

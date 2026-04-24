@@ -5,6 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>frontend</title>
+    <!-- <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/u/mine.js"></script> -->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+      console.log('[Daum API] CDN 로드 중...');
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          console.log('[Daum API] daum 존재 여부:', typeof daum);
+          if (typeof daum !== 'undefined') {
+            console.log('[Daum API] 로드 성공!');
+          } else {
+            console.warn('[Daum API] 로드 실패 - daum 객체 없음');
+          }
+        }, 500);
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

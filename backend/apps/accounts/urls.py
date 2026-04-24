@@ -21,7 +21,10 @@ from . import views
 app_name = 'accounts'
 
 urlpatterns = [
+    # 로그인 페이지
     path('login/', views.login_page, name='login'),
+    # 로그인 처리 (POST)
     path('login/action/', views.login_action, name='login_action'),
+    # 로그아웃
     path('logout/', views.logout_action, name='logout'),
 ]

@@ -2,6 +2,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import React from 'react';
 import './index.css';
+import { TabProvider } from './context/TabContext'; // 1. TabProvider 추가
 
 
 // 1. 데이터 가져오기 (json_script 방식)
@@ -28,13 +29,27 @@ createInertiaApp({
     return typeof page === 'function' ? page() : page.default;
   },
 
-  setup({ el, App, props }) {
-    if (el) {
-      createRoot(el).render(
-        <React.StrictMode>
-          <App {...props} />
-        </React.StrictMode>
-      );
-    }
-  },
-})
+    setup({ el, App, props }) {
+        if (el) {
+          createRoot(el).render(
+            <React.StrictMode>
+              {/* 2. <App />을 <TabProvider>로 감싸줍니다 */}
+              <TabProvider>
+                <App {...props} />
+              </TabProvider>
+            </React.StrictMode>
+          );
+        }
+      },
+    })
+
+//   setup({ el, App, props }) {
+//     if (el) {
+//       createRoot(el).render(
+//         <React.StrictMode>
+//           <App {...props} />
+//         </React.StrictMode>
+//       );
+//     }
+//   },
+// })

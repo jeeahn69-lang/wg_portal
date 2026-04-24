@@ -22,9 +22,12 @@ urlpatterns = [
     # 6. 마을관리카드 (슬래시(/) 추가로 경로 일관성 유지)
     path('card/', views.village_card, name='village_card'),
 
-    # 7. 게시판 목록
+    # 7. 마을정보관리 (슬래시(/) 추가로 경로 일관성 유지)
+    path('vlinfo/', views.village_info, name='village_info'),
+
+    # 8. 게시판 목록
     path('board/', views.board_list, name='board_list'),
 
-    # 8. 마을매출정보
+    # 9. 마을매출정보
     path('sales/', views.village_sales, name='village_sales'),
 ]

@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'wg_portal',
         'USER': 'wg_user',
         'PASSWORD': 'wg1234',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
@@ -110,6 +110,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
@@ -222,7 +228,7 @@ CSRF_COOKIE_HTTPONLY = False
 CSRF_HEADER_NAME = 'HTTP_X_XSRF_TOKEN'
 CSRF_COOKIE_NAME = 'XSRF-TOKEN'
 
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_SAVE_EVERY_REQUEST = False
 
 # 1. CSRF 신뢰 도메인 추가 (포트 번호까지 정확히)
 CSRF_TRUSTED_ORIGINS = [

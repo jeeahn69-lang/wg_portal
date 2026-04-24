@@ -2,6 +2,7 @@
 import React from 'react';
 import Sidebar from '../components/Sidebar';
 import GNB from '../components/GNB';
+import AppTabs from '../components/AppTabs';
 
 export default function MainLayout({ children }) {
   return (
@@ -20,7 +21,10 @@ export default function MainLayout({ children }) {
           <GNB />
         </header>
 
-        {/* 4. 메인 컨텐츠 영역: 여기만 상하 스크롤됨 */}
+        {/* 4. 탭 영역 추가 */}
+        <AppTabs />
+
+        {/* 5. 메인 컨텐츠 영역: 여기만 상하 스크롤됨 */}
         <main className="flex-1 overflow-y-auto outline-none scroll-smooth bg-[#F8FAFC]">
           <div className="p-10 max-w-[1600px] mx-auto min-h-full">
             {children}
