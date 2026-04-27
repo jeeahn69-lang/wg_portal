@@ -19,6 +19,7 @@ class CommonCodeMas(models.Model):
     master_cd = models.CharField(max_length=20, unique=True, verbose_name="대분류 코드", primary_key=True)
     master_nm = models.CharField(max_length=100, verbose_name="대분류명")
     use_yn = models.CharField(max_length=1, choices=[('Y', '사용'), ('N', '미사용')], default='Y', verbose_name="사용여부")
+    remarks = models.TextField(db_column='remarks', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성일")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="수정일")
 

@@ -83,7 +83,7 @@ def login_action(request):
         return redirect('/')
     
     # 3. 인증 실패
-    request.session['errors'] = {'auth': '아이디 or 비밀번호를 확인해 주세요'}
+    request.session['errors'] = {'auth': '사용자 ID or 비밀번호를 확인해 주세요'}
     request.session.modified = True  # 세션 저장 강제
     return redirect('index')
 

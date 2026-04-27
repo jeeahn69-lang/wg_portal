@@ -29,7 +29,7 @@ export default function Login({ errors: initialErrors = {} }) {
   };
 
   // 에러 메시지 통합
-  const authError = initialErrors.auth || errors.auth || (showError ? "아이디, 비밀번호를 확인하세요" : null);
+  const authError = initialErrors.auth || errors.auth || (showError ? "사용자 ID, 비밀번호를 확인하세요" : null);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-slate-200 to-blue-200">
@@ -49,9 +49,9 @@ export default function Login({ errors: initialErrors = {} }) {
           <h2 className="text-4xl font-extrabold text-gray-800 tracking-tight mb-3">
             로그인
           </h2>
-          <p className="text-sm text-gray-600 mb-8 leading-relaxed">
-            완주군 마을통합 마케팅 지원단 <br />
-            서비스 이용을 위해 로그인해주세요.
+          <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
+            Wanju-gun Village <br />
+            Please log in to use the service.
           </p>
 
             <form onSubmit={handleSubmit} className="space-y-5 max-w-[260px]">
@@ -65,7 +65,7 @@ export default function Login({ errors: initialErrors = {} }) {
 
                 {/* 아이디 */}
                 <div>
-                    <label className="text-sm font-medium block mb-1">아이디</label>
+                    <label className="text-sm font-medium block mb-1">사용자 ID</label>
                     <input
                     type="text"
                     name="username"
@@ -118,7 +118,7 @@ export default function Login({ errors: initialErrors = {} }) {
                     disabled={processing}
                     className="w-full py-2 rounded-lg text-white font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 hover:opacity-90 active:scale-[0.98] transition disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                    {processing ? "로그인 중..." : "로그인"}
+                    {processing ? "Login ing..." : "Login"}
                 </button>
 
             </form>

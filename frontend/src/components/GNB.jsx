@@ -68,7 +68,7 @@ export default function GNB() {
         >
           <div className="text-right">
             <p className="text-sm font-bold text-gray-900 leading-none">Jee Ahn Shin</p>
-            <p className="text-xs text-gray-400 mt-1">WanJu Corporation</p>
+            <p className="text-xs text-gray-400 mt-1">WanJu Village Community</p>
           </div>
           <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm cursor-pointer hover:bg-blue-700 transition-colors">JA</div>
         </div>

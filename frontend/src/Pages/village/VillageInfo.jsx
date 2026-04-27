@@ -411,7 +411,7 @@ export default function VillageDetail() {
                                            className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg" value={ageRep} readOnly
                                            placeholder="생년월일 입력 시 자동 적용 됩니다."
                                            readOnly
-                                           value={ageRep}
+                                           value={ageWorker}
                                     />
                                 </div>
                                 {/* 성별 선택 박스 */}

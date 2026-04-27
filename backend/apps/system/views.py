@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Q
+from django.views.decorators.http import require_http_methods  # 추가 공통코드등록 버튼 클릭시 
+from django.views.decorators.csrf import csrf_exempt
 from inertia import render as inertia_render
 from .models import CommonCodeMas, CommonCodeDtl, CommonCode
 import json
@@ -45,7 +47,7 @@ def comcode_manager(request):
     
     return inertia_render(
         request,
-        'system/Comcodemanager',
+        'system/ComCodeList',
         {
             'masterList': master_list,
             'detailList': detail_list,
@@ -92,4 +94,72 @@ def get_detail_codes(request, master_cd):
             'success': False,
             'data': [],
             'message': f'오류 발생: {str(e)}'
+        }, status=500)
+
+
+@login_required
+@csrf_exempt # CSRF 검증을 우회 (주의: 실제 배포 시에는 적절한 CSRF 보호 방법을 사용해야 합니다)
+@require_http_methods(["POST"])
+def comcode_create(request):
+    """공통코드 대분류 등록"""
+    
+    try:
+        # ✅ JSON 형식의 요청 데이터 파싱
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'message': '요청 데이터 형식이 올바르지 않습니다.'
+            }, status=400)
+        
+        master_cd = data.get('master_cd', '').strip()
+        master_nm = data.get('master_nm', '').strip()
+        use_yn    = data.get('use_yn', 'Y').strip()
+        remarks   = data.get('remarks', '').strip()
+ 
+        # ── 유효성 검사 ──────────────────────────────────────
+        errors = {}
+ 
+        if not master_cd:
+            errors['master_cd'] = '코드를 입력하세요.'
+        elif len(master_cd) > 50:
+            errors['master_cd'] = '코드는 50자 이하로 입력하세요.'
+ 
+        if not master_nm:
+            errors['master_nm'] = '코드명을 입력하세요.'
+        elif len(master_nm) > 100:
+            errors['master_nm'] = '코드명은 100자 이하로 입력하세요.'
+ 
+        if use_yn not in ('Y', 'N'):
+            errors['use_yn'] = '사용여부 값이 올바르지 않습니다.'
+ 
+        if errors:
+            return JsonResponse({'success': False, 'errors': errors}, status=422)
+ 
+        # ── 중복 체크 ─────────────────────────────────────────
+        if CommonCodeMas.objects.filter(master_cd=master_cd).exists():
+            return JsonResponse({
+                'success': False,
+                'errors': {'master_cd': f"'{master_cd}' 코드가 이미 존재합니다."}
+            }, status=409)
+ 
+        # ── DB 저장 ───────────────────────────────────────────
+        # created_at, updated_at은 auto_now_add/auto_now에 의해 자동 설정됨
+        CommonCodeMas.objects.create(
+            master_cd=master_cd,
+            master_nm=master_nm,
+            use_yn=use_yn,
+            remarks=remarks,
+        )
+ 
+        return JsonResponse({
+            'success': True,
+            'message': f"'{master_nm}' 코드가 등록되었습니다.",
+        }, status=201)
+ 
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'오류가 발생했습니다: {str(e)}'
         }, status=500)

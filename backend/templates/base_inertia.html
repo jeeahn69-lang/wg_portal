@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>완주군 마을통합마케팅 포털</title>
 
+   
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
     <script type="module">
         import RefreshRuntime from 'http://127.0.0.1:5173/@react-refresh'
         if (RefreshRuntime) {
@@ -15,7 +18,7 @@
         }
     </script>
 
-    {% csrf_token %}
+     {% csrf_token %}
     
 </head>
 
