@@ -67,10 +67,12 @@ def get_detail_codes(request, master_cd):
         # 요청한 대분류가 존재하는지 확인
         master = CommonCodeMas.objects.get(master_cd=master_cd)
         
-        # 해당 대분류의 소분류 조회
+        # 해당 대분류의 소분류 조회 - ForeignKey 객체로 필터링
         details = list(CommonCodeDtl.objects.filter(
-            master_cd=master_cd
+            master_cd=master  # 문자열이 아닌 ForeignKey 객체 사용
         ).values(
+            'dtl_idx',
+            'master_cd_id',
             'dtl_cd',
             'dtl_nm',
             'sort_ord',
@@ -90,6 +92,8 @@ def get_detail_codes(request, master_cd):
             'message': '해당 대분류 코드를 찾을 수 없습니다.'
         }, status=404)
     except Exception as e:
+        import traceback
+        traceback.print_exc()  # 디버깅용 스택 추적
         return JsonResponse({
             'success': False,
             'data': [],
@@ -158,6 +162,191 @@ def comcode_create(request):
             'message': f"'{master_nm}' 코드가 등록되었습니다.",
         }, status=201)
  
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'오류가 발생했습니다: {str(e)}'
+        }, status=500)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#                     상세코드(DetailCode) CRUD API
+# ══════════════════════════════════════════════════════════════════════════════
+
+@login_required
+@require_http_methods(["POST"])
+def comcode_detail_create(request):
+    """상세코드 신규 등록"""
+    
+    try:
+        # ✅ JSON 형식의 요청 데이터 파싱
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'message': '요청 데이터 형식이 올바르지 않습니다.'
+            }, status=400)
+        
+        master_cd = data.get('master_cd', '').strip()
+        dtl_cd = data.get('dtl_cd', '').strip()
+        dtl_nm = data.get('dtl_nm', '').strip()
+        sort_ord = data.get('sort_ord', 0)
+        use_yn = data.get('use_yn', 'Y').strip()
+
+        # ── 유효성 검사 ──────────────────────────────────────
+        errors = {}
+
+        if not master_cd:
+            errors['master_cd'] = '대분류 코드가 필요합니다.'
+        
+        if not dtl_cd:
+            errors['dtl_cd'] = '상세코드를 입력하세요.'
+        elif len(dtl_cd) > 50:
+            errors['dtl_cd'] = '상세코드는 50자 이하로 입력하세요.'
+
+        if not dtl_nm:
+            errors['dtl_nm'] = '상세코드명을 입력하세요.'
+        elif len(dtl_nm) > 100:
+            errors['dtl_nm'] = '상세코드명은 100자 이하로 입력하세요.'
+
+        if sort_ord < 0:
+            errors['sort_ord'] = '정렬순서는 0 이상이어야 합니다.'
+
+        if use_yn not in ('Y', 'N'):
+            errors['use_yn'] = '사용여부 값이 올바르지 않습니다.'
+
+        if errors:
+            return JsonResponse({'success': False, 'errors': errors}, status=422)
+
+        # ── 대분류 존재 확인 ─────────────────────────────────
+        try:
+            master = CommonCodeMas.objects.get(master_cd=master_cd)
+        except CommonCodeMas.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'errors': {'master_cd': '존재하지 않는 대분류 코드입니다.'}
+            }, status=404)
+
+        # ── 중복 체크 ─────────────────────────────────────────
+        if CommonCodeDtl.objects.filter(master_cd=master_cd, dtl_cd=dtl_cd).exists():
+            return JsonResponse({
+                'success': False,
+                'errors': {'dtl_cd': f"'{dtl_cd}' 상세코드가 이미 존재합니다."}
+            }, status=409)
+
+        # ── DB 저장 ───────────────────────────────────────────
+        # created_at, updated_at은 auto_now_add/auto_now에 의해 자동 설정됨
+        CommonCodeDtl.objects.create(
+            master_cd=master,
+            dtl_cd=dtl_cd,
+            dtl_nm=dtl_nm,
+            sort_ord=sort_ord,
+            use_yn=use_yn,
+        )
+
+        return JsonResponse({
+            'success': True,
+            'message': f"'{dtl_nm}' 상세코드가 등록되었습니다.",
+        }, status=201)
+
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'오류가 발생했습니다: {str(e)}'
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def comcode_detail_update(request):
+    """상세코드 수정"""
+    
+    try:
+        # ✅ JSON 형식의 요청 데이터 파싱
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'message': '요청 데이터 형식이 올바르지 않습니다.'
+            }, status=400)
+        
+        dtl_idx = data.get('dtl_idx')
+        dtl_nm = data.get('dtl_nm', '').strip()
+        sort_ord = data.get('sort_ord', 0)
+        use_yn = data.get('use_yn', 'Y').strip()
+
+        # ── 유효성 검사 ──────────────────────────────────────
+        errors = {}
+
+        if not dtl_idx:
+            errors['dtl_idx'] = '상세코드 ID가 필요합니다.'
+        
+        if not dtl_nm:
+            errors['dtl_nm'] = '상세코드명을 입력하세요.'
+        elif len(dtl_nm) > 100:
+            errors['dtl_nm'] = '상세코드명은 100자 이하로 입력하세요.'
+
+        if sort_ord < 0:
+            errors['sort_ord'] = '정렬순서는 0 이상이어야 합니다.'
+
+        if use_yn not in ('Y', 'N'):
+            errors['use_yn'] = '사용여부 값이 올바르지 않습니다.'
+
+        if errors:
+            return JsonResponse({'success': False, 'errors': errors}, status=422)
+
+        # ── 상세코드 조회 ────────────────────────────────────
+        try:
+            detail = CommonCodeDtl.objects.get(dtl_idx=dtl_idx)
+        except CommonCodeDtl.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'errors': {'dtl_idx': '존재하지 않는 상세코드입니다.'}
+            }, status=404)
+
+        # ── DB 수정 ────────────────────────────────────────
+        detail.dtl_nm = dtl_nm
+        detail.sort_ord = sort_ord
+        detail.use_yn = use_yn
+        detail.save()
+
+        return JsonResponse({
+            'success': True,
+            'message': f"'{dtl_nm}' 상세코드가 수정되었습니다.",
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'오류가 발생했습니다: {str(e)}'
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["DELETE"])
+def comcode_detail_delete(request, dtl_idx):
+    """상세코드 삭제"""
+    
+    try:
+        # ── 상세코드 조회 ────────────────────────────────────
+        try:
+            detail = CommonCodeDtl.objects.get(dtl_idx=dtl_idx)
+        except CommonCodeDtl.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': '존재하지 않는 상세코드입니다.'
+            }, status=404)
+
+        dtl_nm = detail.dtl_nm
+        detail.delete()
+
+        return JsonResponse({
+            'success': True,
+            'message': f"'{dtl_nm}' 상세코드가 삭제되었습니다.",
+        }, status=200)
+
     except Exception as e:
         return JsonResponse({
             'success': False,

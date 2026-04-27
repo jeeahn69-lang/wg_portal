@@ -4,6 +4,7 @@ import MainLayout from "../../layouts/MainLayout";
 import { useTabs } from '../../context/TabContext';
 import { Database, Search, RotateCcw, Loader2 } from 'lucide-react';
 import ComCodeCreate from './ComCodeCreate';
+import ComCodeDetail from './ComCodeDetail';
 
 export default function ComCodeManager({ masterList = [], detailList = [], searchParams: initialSearchParams = {} }) {
     const { addTab } = useTabs();
@@ -11,6 +12,10 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
     const [detailsData, setDetailsData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+    
+    // ComCodeDetail 모달 관련 상태
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [selectedDetail, setSelectedDetail] = useState(null);
 
     const [searchParams, setSearchParams] = useState({
         master_cd: initialSearchParams?.master_cd || '',
@@ -46,6 +51,26 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
 
     const handleCreateSuccess = () => {
         router.reload({ preserveState: false });
+    };
+
+    // 상세코드 행 클릭
+    const handleDetailRowClick = (detail) => {
+        setSelectedDetail(detail);
+        setIsDetailOpen(true);
+    };
+
+    // 상세코드 신규 추가
+    const handleAddNewDetail = () => {
+        setSelectedDetail(null);
+        setIsDetailOpen(true);
+    };
+
+    // 상세코드 저장 성공
+    const handleDetailSuccess = () => {
+        // 현재 선택된 마스터 코드의 상세코드 목록 다시 조회
+        if (selectedMaster) {
+            handleMasterClick(selectedMaster);
+        }
     };
 
     return (
@@ -178,7 +203,9 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                                         </span>
                                     )}
                                 </h3>
-                                <button className="px-3 py-1.5 text-[13px] font-black bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors">
+                                <button 
+                                    onClick={handleAddNewDetail}
+                                    className="px-3 py-1.5 text-[13px] font-black bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors">
                                     + Add New Code
                                 </button>
                             </div>
@@ -202,7 +229,10 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                                             </thead>
                                             <tbody className="text-sm text-gray-600">
                                                 {detailsData.length > 0 ? detailsData.map((item, idx) => (
-                                                    <tr key={`${item.dtl_cd}-${idx}`} className="hover:bg-indigo-50/50 transition-colors border-b border-gray-50">
+                                                    <tr 
+                                                        key={`${item.dtl_cd}-${idx}`} 
+                                                        onClick={() => handleDetailRowClick(item)}
+                                                        className="hover:bg-indigo-50/50 transition-colors border-b border-gray-50 cursor-pointer">
                                                         <td className="px-8 py-4 font-bold text-gray-900">{item.dtl_cd}</td>
                                                         <td className="px-8 py-4">{item.dtl_nm}</td>
                                                         <td className="px-8 py-4 text-center text-gray-500">{item.sort_ord}</td>
@@ -239,6 +269,15 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                     isOpen={isCreateOpen}
                     onClose={() => setIsCreateOpen(false)}
                     onSuccess={handleCreateSuccess}
+                />
+
+                {/* 상세코드 신규/수정 모달 */}
+                <ComCodeDetail
+                    isOpen={isDetailOpen}
+                    onClose={() => setIsDetailOpen(false)}
+                    onSuccess={handleDetailSuccess}
+                    masterCode={selectedMaster}
+                    detailData={selectedDetail}
                 />
 
         </MainLayout>
