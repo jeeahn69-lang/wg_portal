@@ -126,7 +126,7 @@ TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -227,6 +227,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 CSRF_COOKIE_HTTPONLY = False
 CSRF_HEADER_NAME = 'HTTP_X_XSRF_TOKEN'
 CSRF_COOKIE_NAME = 'XSRF-TOKEN'
+# CSRF_COOKIE_NAME = 'csrftoken'  # Django 기본값
 
 SESSION_SAVE_EVERY_REQUEST = False
 

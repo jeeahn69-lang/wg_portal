@@ -15,8 +15,8 @@ export default function Dashboard() {
   const posts = [
     { id: '#1234567890', title: '2026년 상반기 마을 공동체 보조금 신청 안내', author: '관리자', date: 'July 01, 2021 - 10:00 AM', status: 'Payment Successful' },
     { id: '#0987654321', title: '완주군 마을 통합 마케팅 지원 사업 공지', author: '시스템운영팀', date: 'June 01, 2021 - 1:00 PM', status: 'Refunded' },
-    { id: '#0987654321', title: '완주군 마을 통합 마케팅 지원 사업 공지', author: '시스템운영팀', date: 'June 01, 2021 - 1:00 PM', status: 'Refunded' },
-    { id: '#0987654321', title: '완주군 마을 통합 마케팅 지원 사업 공지', author: '시스템운영팀', date: 'June 01, 2021 - 1:00 PM', status: 'Refunded' },
+    { id: '#1111111111', title: '완주군 마을 통합 마케팅 지원 사업 공지', author: '시스템운영팀', date: 'June 01, 2021 - 1:00 PM', status: 'Refunded' },
+    { id: '#2222222222', title: '완주군 마을 통합 마케팅 지원 사업 공지', author: '시스템운영팀', date: 'June 01, 2021 - 1:00 PM', status: 'Refunded' },
   ];
 
   return (

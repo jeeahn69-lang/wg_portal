@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { router } from '@inertiajs/react';
 import { X, Database, Plus, RotateCcw } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 /**
  * ComCodeCreate - 공통코드 등록 모달
@@ -77,9 +78,39 @@ export default function ComCodeCreate({ isOpen = false, onClose, onSuccess }) {
             const data = await response.json();
 
             if (data.success) {
+                // ✅ 기존 alert 대신 SweetAlert2 적용
+                Swal.fire({
+                    title: '완료',
+                    text: '정상적으로 처리되었습니다.',
+                    icon: 'success',
+                    // 1. 크기 조절 (기본값은 32rem 정도입니다. 24rem이나 300~400px 정도로 줄일 수 있습니다)
+                    width: '320px', 
+                    // 2. 바깥 클릭 시 창이 닫히지 않도록 설정
+                    allowOutsideClick: false,
+                    // 3. ESC 키를 눌러서 닫히는 것 방지
+                    allowEscapeKey: false,
+
+                    confirmButtonText: '확인',
+                    confirmButtonColor: '#4f46e5', // 프로젝트 테마색(Indigo)
+
+                    // 버튼 디자인을 더 작게 만들고 싶을 때 (Tailwind 클래스 활용 가능)
+                    customClass: {
+                        text: 'text-[8px] font-bold pt-2', // sm(14px) 또는 xs(12px) 추천
+                        title: 'text-[10px] font-bold pt-2', // sm(14px) 또는 xs(12px) 추천
+                        icon: 'm-2 w-12 h-12 scale-75', // 마진 줄이고, 가로세로 고정 후 scale로 축소
+                        confirmButton: 'px-6 py-2 text-sm rounded-lg',
+                        htmlContainer: 'text-xs text-gray-500 m-0', // xs는 12px로 가장 작은 표준 크기
+                        confirmButton: 'text-xs py-1.5 px-4 rounded-md',
+                        popup: 'rounded-xl'      // 팝업: 모서리 곡률 조절
+                    },
+                    // 아이콘 크기 자체가 너무 크다면 아래 옵션으로 비중을 조절할 수 있습니다.
+                    showClass: {
+                        popup: 'animate__animated animate__fadeIn animate__faster'
+                    }
+                });
                 handleReset();
                 if (onSuccess) onSuccess();
-                if (onClose) onClose();
+                // if (onClose) onClose(); // 성공 후에도 모달 유지 (목록 새로고침 후 사용자가 직접 닫도록)
             } else {
                 // 서버 유효성 에러 표시
                 if (data.errors) setErrors(data.errors);
@@ -105,7 +136,7 @@ export default function ComCodeCreate({ isOpen = false, onClose, onSuccess }) {
         <div
             className="fixed inset-0 z-50 flex items-center justify-center"
             style={{ backgroundColor: 'rgba(15, 23, 42, 0.55)', backdropFilter: 'blur(4px)' }}
-            onClick={handleBackdropClick}
+            // onClick={handleBackdropClick}  // 외부 클릭으로 닫기 (필요 시 활성화)
         >
             {/* Modal Panel */}
             <div className="relative bg-white rounded-[6px] shadow-2xl border border-gray-100 w-full max-w-md mx-4 overflow-hidden"

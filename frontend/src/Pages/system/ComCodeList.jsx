@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { router } from '@inertiajs/react';
 import MainLayout from "../../layouts/MainLayout";
 import { useTabs } from '../../context/TabContext';
-import { Database, Search, RotateCcw, Loader2 } from 'lucide-react';
+import { Database, Search, RotateCcw, Loader2, Trash2 } from 'lucide-react';
 import ComCodeCreate from './ComCodeCreate';
 import ComCodeDetail from './ComCodeDetail';
+import Swal from 'sweetalert2';
 
 export default function ComCodeManager({ masterList = [], detailList = [], searchParams: initialSearchParams = {} }) {
     const { addTab } = useTabs();
@@ -73,6 +74,121 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
         }
     };
 
+    // 공통코드(마스터) 삭제 처리
+    const handleDeleteMaster = async (masterCd) => {
+        const result = await Swal.fire({
+            title: '공통 코드를 삭제하시겠습니까?',
+            text: "삭제 시 관련 상세 데이터가 모두 삭제될 수 있습니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소',
+            width: '520px'
+        });
+
+        if (result.isConfirmed) {
+            try {
+
+                // 호출 직전에 URL을 콘솔에 찍어서 404가 난 주소를 확인하세요.
+                const url = `/system/comcode/master/delete/${masterCd}/`;
+                console.log("요청 URL:", url);
+
+                // urls.py에 정의할 경로와 일치해야 합니다.
+                // const response = await fetch(`/system/comcode/master/delete/${masterCd}/`, {
+                const response = await fetch(url,{
+                    method: 'DELETE',
+                    headers: {
+                        'X-XSRF-TOKEN': document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || '',
+                    }
+                });
+
+                // 404 에러는 클라이언트에서 요청한 URL이 서버에서 정의된 URL 패턴과 일치하지 않을 때 발생합니다.
+                if (response.status === 404) {
+                throw new Error("404: 서버에서 삭제 경로를 찾을 수 없습니다. URL 설정을 확인하세요.");
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    await Swal.fire({
+                        title: '삭제 완료',
+                        icon: 'success',
+                        timer: 1000,
+                        showConfirmButton: false
+                    });
+                    
+                    // 마스터 목록 새로고침 (기존 조회 함수 호출)
+                    handleSearch(); 
+                    // 상세 목록창 비우기
+                    setDetailsData([]);
+                    setSelectedMaster(null);
+                } else {
+                    Swal.fire('실패', data.message || '삭제 중 오류 발생', 'error');
+                }
+            } catch (error) {
+                console.error('Master Delete Error:', error);
+                Swal.fire('오류', '서버 통신 중 문제가 발생했습니다.', 'error');
+            }
+        }
+    };
+
+
+    // 상세코드 트레이스 클릭시 한행 삭제
+    const handleDeleteDetail = async (dtlIdx) => {
+        const result = await Swal.fire({
+            title: '정말 삭제하시겠습니까?',
+            text: "삭제 후에는 데이터를 복구할 수 없습니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소',
+            width: '520px',
+            allowOutsideClick: false, // 아까 설정한 바깥 클릭 방지
+            customClass: {
+                title: 'text-xs font-bold',
+                htmlContainer: 'text-xs',
+                confirmButton: 'text-xs px-4 py-2',
+                cancelButton: 'text-xs px-4 py-2'
+            }
+        });
+
+        if (result.isConfirmed) {
+            try {
+                // 백엔드 삭제 API 호출 (URL은 프로젝트 API 명세에 맞게 확인하세요)
+                const response = await fetch(`/system/comcode/detail/delete/${dtlIdx}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-XSRF-TOKEN': document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || '',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        title: '삭제 완료',
+                        icon: 'success',
+                        width: '300px',
+                        timer: 1000,
+                        showConfirmButton: false
+                    });
+                    
+                    // 삭제 성공 후 목록 새로고침 (기존에 만들어두신 성공 로직 재활용)
+                    handleDetailSuccess();
+                } else {
+                    Swal.fire('실패', data.message || '삭제 중 오류가 발생했습니다.', 'error');
+                }
+            } catch (error) {
+                console.error('Delete Error:', error);
+                Swal.fire('오류', '서버와 통신 중 문제가 발생했습니다.', 'error');
+            }
+        }
+    };
+
     return (
         <MainLayout>
             <div className="font-sans flex flex-col bg-gray-50/50 mb-8">
@@ -102,7 +218,7 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                 <div className="flex gap-6 items-stretch">
 
                     {/* ── 왼쪽: 검색 + 공통코드 목록 ── */}
-                    <div className="w-5/12 flex flex-col gap-6">
+                    <div className="w-6/12 flex flex-col gap-6">
 
                         {/* 검색 카드 */}
                         <div className="bg-white rounded-[24px] border border-blue-100 shadow-xl p-5 flex-shrink-0">
@@ -155,6 +271,7 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                                             <th className="px-8 py-4">코드</th>
                                             <th className="px-8 py-4">코드명</th>
                                             <th className="px-8 py-4 text-center">상태</th>
+                                            <th className="px-8 py-4 text-center">삭제</th>
                                         </tr>
                                     </thead>
                                     <tbody className="text-sm text-gray-600">
@@ -176,6 +293,19 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                                                         {item.use_yn === 'Y' ? '사용' : '미사용'}
                                                     </span>
                                                 </td>
+                                                {/* ✅ 추가: 삭제 버튼 칸 */}
+                                                <td className="px-8 py-4 text-center">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); // 부모 tr 클릭 이벤트 차단
+                                                            handleDeleteMaster(item.master_cd);
+                                                        }}
+                                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5 transition-transform group-hover:scale-110"      
+                                                        strokeWidth={1.5} />
+                                                    </button>
+                                                </td>
                                             </tr>
                                         )) : (
                                             <tr>
@@ -190,7 +320,7 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
 
                     {/* ── 오른쪽: 상세코드 목록 ── */}
                     {/* ✅ 고정 높이 + flex 구조로 스크롤 */}
-                    <div className="w-7/12 flex">
+                    <div className="w-6/12 flex">
                         <div className="bg-white rounded-[32px] border border-blue-100 shadow-xl flex flex-col h-full w-full">    {/* 여기수정 위 2줄 ✅ 고정 높이 + flex 구조로 스크롤 */}
                             {/* 카드 헤더 - 고정 */}
                             <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 flex-shrink-0 rounded-t-[32px]">
@@ -225,6 +355,7 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                                                     <th className="px-8 py-4">상세코드명</th>
                                                     <th className="px-8 py-4 text-center">순서</th>
                                                     <th className="px-8 py-4 text-center">사용여부</th>
+                                                    <th className="px-8 py-4 text-center">삭제</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="text-sm text-gray-600">
@@ -241,6 +372,19 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                                                             ${item.use_yn === 'Y' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
                                                                 {item.use_yn === 'Y' ? '사용' : '미사용'}
                                                             </span>
+                                                        </td>
+                                                        {/* ✅ 추가: 삭제 버튼 칸 */}
+                                                        <td className="px-8 py-4 text-center">
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation(); // 👈 행 클릭 이벤트(수정 모달)가 발생하는 것을 막음
+                                                                    handleDeleteDetail(item.dtl_idx);
+                                                                }}
+                                                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all group"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5 transition-transform group-hover:scale-110"
+                                                                 strokeWidth={1.5} />
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 )) : (

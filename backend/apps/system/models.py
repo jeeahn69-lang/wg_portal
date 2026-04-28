@@ -34,6 +34,8 @@ class CommonCodeMas(models.Model):
 
 class CommonCodeDtl(models.Model):
     """공통코드 소분류 테이블 (sy_comcode_dtl)"""
+    # 2026.04.28 del_idx 반드시 추가 
+    dtl_idx = models.AutoField(primary_key=True, verbose_name="소분류 PK")
     master_cd = models.ForeignKey(CommonCodeMas, on_delete=models.CASCADE, verbose_name="대분류 코드", db_column='master_cd')
     dtl_cd = models.CharField(max_length=20, verbose_name="소분류 코드")
     dtl_nm = models.CharField(max_length=100, verbose_name="소분류명")
