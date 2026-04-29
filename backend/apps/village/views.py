@@ -15,8 +15,8 @@ def village_card(request):
     return inertia_render(request, 'village/VillageDetail')
 
 def village_info(request):
-    # 'village/VillageInfo'는 Pages/village/VillageInfo.jsx 파일을 의미합니다.
-    return inertia_render(request, 'village/VillageInfo')
+    # 'village/VillageInfoCreate'는 Pages/village/VillageInfoCreate.jsx 파일을 의미합니다.
+    return inertia_render(request, 'village/VillageInfoCreate')
 
 def dashboard(request):
     # 'village/Dashboard'는 Pages/village/Dashboard.jsx 파일을 의미합니다.
@@ -31,4 +31,4 @@ def board_list(request): #BoardList_list(request):
     return inertia_render(request, 'village/BoardList')
 
 def village_sales(request):
-    return inertia_render(request, 'village/VillageSales')
+    return inertia_render(request, 'village/VillageInfoList')

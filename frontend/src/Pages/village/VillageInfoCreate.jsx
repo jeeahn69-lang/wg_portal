@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from "../../layouts/MainLayout";
 import { useTabs } from '../../context/TabContext';
 
-export default function VillageDetail() {
+export default function VillageInfoCreate() {
     const { openTabs, activeTabId } = useTabs();
     const currentTab = openTabs.find(tab => tab.id === activeTabId);
     const villageName = currentTab?.villageName || '밤티마을';

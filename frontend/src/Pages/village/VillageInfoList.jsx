@@ -3,7 +3,7 @@ import MainLayout from "../../layouts/MainLayout";
 import { useTabs } from '../../context/TabContext';
 import { Wallet } from 'lucide-react';
 
-export default function VillageSales() {
+export default function VillageInfoList() {
     const { addTab } = useTabs();
     // 샘플 데이터 (image_2de23d.png 기반)
     const salesData = [

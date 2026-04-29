@@ -5,6 +5,19 @@ import './index.css';
 import { TabProvider } from './context/TabContext'; // 1. TabProvider 추가
 
 
+// 2. WanjuPortalV2 컴포넌트 불러오기를 할때는 아래 주석을 해제하고, createInertiaApp 부분은 주석 처리합니다.
+// import WanjuPortalV2 from './Pages/village/wanju-portal-v2'; // 불러오기
+
+
+// const el = document.getElementById('root'); // index.html의 id 확인 (보통 'app' 또는 'root')
+
+// createRoot(el).render(
+//   <React.StrictMode>
+//     <WanjuPortalV2 />
+//   </React.StrictMode>
+// );
+
+
 // 1. 데이터 가져오기 (json_script 방식)
 // const jsonData = document.getElementById('inertia-data')?.textContent;
 // const initialPage = jsonData ? JSON.parse(jsonData) : null;
@@ -43,13 +56,3 @@ createInertiaApp({
       },
     })
 
-//   setup({ el, App, props }) {
-//     if (el) {
-//       createRoot(el).render(
-//         <React.StrictMode>
-//           <App {...props} />
-//         </React.StrictMode>
-//       );
-//     }
-//   },
-// })
