@@ -5,11 +5,11 @@ import { useTabs } from '@/context/TabContext'; // 프로젝트 설정에 따라
 const MENU_DATA = [
   {
     icon: '🏡',
-    label: '마을정보',
+    label: '공동체정보',
     subMenus: [
-      { label: '마을관리카드', href: '/village/card/' },
-      { label: '마을정보관리', href: '/village/vlinfo/' },
-      { label: '마을매출정보', href: '/village/sales/' }
+      { label: '마을공동체현황', href: '/village/vlinfo/' },
+      { label: '아파트공동체현황', href: '/village/card/' },
+      { label: '마을기업매출현황', href: '/village/sales/' }
 
     ]
   },
@@ -52,7 +52,7 @@ export default function Sidebar() {
   const { addTab } = useTabs(); // 이 줄을 추가하세요 멀티탭 선언
 
   const [openMenus, setOpenMenus] = useState({
-    '마을정보': true,
+    '공동체정보': true,
   });
 
   const toggleMenu = (label) => {

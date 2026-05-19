@@ -202,12 +202,12 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                         <p className="text-gray-400 text-xs mt-1 font-medium">시스템 전반에서 사용되는 마스터 코드를 관리합니다.</p>
                     </div>
                     <div className="flex gap-3">
-                        <button className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl shadow-sm hover:bg-gray-50 font-bold text-xs transition-all">
+                        <button className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg shadow-sm hover:bg-gray-50 font-bold text-xs transition-all">
                             엑셀 내보내기
                         </button>
                         <button
                             onClick={() => setIsCreateOpen(true)}
-                            className="px-5 py-2.5 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-100 hover:bg-blue-700 font-bold text-xs transition-all active:scale-95"
+                            className="px-5 py-2.5 bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-100 hover:bg-blue-700 font-bold text-xs transition-all active:scale-95"
                         >
                             공통코드 등록
                         </button>
@@ -221,14 +221,14 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                     <div className="w-6/12 flex flex-col gap-6">
 
                         {/* 검색 카드 */}
-                        <div className="bg-white rounded-[24px] border border-blue-100 shadow-xl p-5 flex-shrink-0">
+                        <div className="bg-white rounded-lg border border-blue-100 shadow-xl p-5 flex-shrink-0">
                             <div className="flex items-center gap-4">
                                 <div className="flex-1 grid grid-cols-2 gap-3">
                                     <div className="flex flex-col gap-1.5">
                                         <label className="text-sm font-bold text-gray-400 ml-1 uppercase tracking-wider">코드</label>
                                         <input
                                             type="text"
-                                            className="px-4 py-2 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-cyan-100 transition-all outline-none"
+                                            className="px-4 py-2 bg-gray-100 border-none rounded-lg text-sm focus:ring-2 focus:ring-cyan-100 transition-all outline-none"
                                             value={searchParams.master_cd}
                                             onChange={(e) => setSearchParams({ ...searchParams, master_cd: e.target.value })}
                                         />
@@ -237,17 +237,17 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                                         <label className="text-sm font-bold text-gray-400 ml-1 uppercase tracking-wider">코드명</label>
                                         <input
                                             type="text"
-                                            className="px-4 py-2 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-cyan-100 transition-all outline-none"
+                                            className="px-4 py-2 bg-gray-100 border-none rounded-lg text-sm focus:ring-2 focus:ring-cyan-100 transition-all outline-none"
                                             value={searchParams.master_nm}
                                             onChange={(e) => setSearchParams({ ...searchParams, master_nm: e.target.value })}
                                         />
                                     </div>
                                 </div>
                                 <div className="flex gap-2 self-end">
-                                    <button onClick={handleReset} className="p-2.5 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200">
+                                    <button onClick={handleReset} className="p-2.5 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200">
                                         <RotateCcw size={18} />
                                     </button>
-                                    <button onClick={handleSearch} className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl font-bold text-xs hover:bg-black shadow-md">
+                                    <button onClick={handleSearch} className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-lg font-bold text-xs hover:bg-black shadow-md">
                                         <Search size={16} /> 조회
                                     </button>
                                 </div>
@@ -255,80 +255,87 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                         </div>
 
                         {/* 공통코드 목록 카드 - ✅ 고정 높이 + flex 구조로 스크롤 */}
-                        <div className="bg-white rounded-[32px] border border-blue-100 shadow-xl flex flex-col h-full">
+                        <div className="bg-white rounded-lg border border-blue-100 shadow-xl flex flex-col h-full">
                             {/* 카드 헤더 - 고정 */}
-                            <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex-shrink-0 rounded-t-[32px]">
+                            <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex-shrink-0 rounded-lg">
                                 <h3 className="font-black text-gray-800 flex items-center gap-2 text-lg">
                                     <span className="w-1.5 h-4 bg-blue-600 rounded-full"></span>
                                     공통코드 목록 ({masterList.length})
                                 </h3>
                             </div>
-                            {/* ✅ 스크롤 영역 - flex-1 + overflow-y-auto */}
-                            <div className="flex-1 overflow-y-auto">
-                                <table className="w-full text-left border-collapse">
-                                    <thead className="bg-gray-50/80 sticky top-0 z-10 backdrop-blur-sm">
-                                        <tr className="text-gray-400 text-sm uppercase font-black tracking-widest">
-                                            <th className="px-8 py-4">코드</th>
-                                            <th className="px-8 py-4">코드명</th>
-                                            <th className="px-8 py-4 text-center">상태</th>
-                                            <th className="px-8 py-4 text-center">삭제</th>
+                            {/* ✅ 스크롤 영역 */}
+                        <div className="flex-1 overflow-x-auto px-4 pb-4">
+                            <table className="w-full text-left border-separate border-spacing-y-0">
+                                <thead>
+                                    <tr className="bg-gray-200/60 text-gray-400 text-sm uppercase font-black tracking-widest">
+                                        <th className="px-8 py-4 rounded-l-xl">코드</th>
+                                        <th className="px-8 py-4">코드명</th>
+                                        <th className="px-8 py-4 text-center">상태</th>
+                                        <th className="px-8 py-4 text-center rounded-r-xl">삭제</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody className="text-sm text-gray-600">
+                                    {masterList.length > 0 ? masterList.map((item) => (
+                                        <tr
+                                            key={item.master_cd}
+                                            onClick={() => handleMasterClick(item.master_cd)}
+                                            className={`cursor-pointer transition-all border-b border-gray-50
+                                                ${selectedMaster === item.master_cd
+                                                    ? 'bg-blue-50/80 font-bold border-l-4 border-l-blue-600'
+                                                    : 'hover:bg-gray-50'}`}
+                                        >
+                                            <td className="px-8 py-4 text-gray-900">{item.master_cd}</td>
+                                            <td className="px-8 py-4">{item.master_nm}</td>
+
+                                            <td className="px-8 py-4 text-center">
+                                                <span className={`px-2 py-1 rounded-lg text-[10px] font-black
+                                                    ${item.use_yn === 'Y'
+                                                        ? 'bg-green-100 text-green-600'
+                                                        : 'bg-red-100 text-red-600'}`}>
+                                                    {item.use_yn === 'Y' ? '사용' : '미사용'}
+                                                </span>
+                                            </td>
+
+                                            <td className="px-8 py-4 text-center">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDeleteMaster(item.master_cd);
+                                                    }}
+                                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+                                                >
+                                                    <Trash2
+                                                        className="w-3.5 h-3.5 transition-transform group-hover:scale-110"
+                                                        strokeWidth={1.5}
+                                                    />
+                                                </button>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody className="text-sm text-gray-600">
-                                        {masterList.length > 0 ? masterList.map((item) => 
-                                        (
-                                            <tr
-                                                key={item.master_cd}
-                                                onClick={() => handleMasterClick(item.master_cd)}
-                                                className={`cursor-pointer transition-all border-b border-gray-50
-                                                    ${selectedMaster === item.master_cd
-                                                        ? 'bg-blue-50/80 font-bold border-l-4 border-l-blue-600'
-                                                        : 'hover:bg-gray-50'}`}
-                                            >
-                                                <td className="px-8 py-4 text-gray-900">{item.master_cd}</td>
-                                                <td className="px-8 py-4">{item.master_nm}</td>
-                                                <td className="px-8 py-4 text-center">
-                                                    <span className={`px-2 py-1 rounded-md text-[10px] font-black
-                                                        ${item.use_yn === 'Y' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                                                        {item.use_yn === 'Y' ? '사용' : '미사용'}
-                                                    </span>
-                                                </td>
-                                                {/* ✅ 추가: 삭제 버튼 칸 */}
-                                                <td className="px-8 py-4 text-center">
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation(); // 부모 tr 클릭 이벤트 차단
-                                                            handleDeleteMaster(item.master_cd);
-                                                        }}
-                                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
-                                                    >
-                                                        <Trash2 className="w-3.5 h-3.5 transition-transform group-hover:scale-110"      
-                                                        strokeWidth={1.5} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        )) : (
-                                            <tr>
-                                                <td colSpan="3" className="px-6 py-12 text-center text-gray-300 italic">데이터가 없습니다.</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan="4" className="px-6 py-12 text-center text-gray-300 italic">
+                                                데이터가 없습니다.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                         </div>
                     </div>
 
                     {/* ── 오른쪽: 상세코드 목록 ── */}
                     {/* ✅ 고정 높이 + flex 구조로 스크롤 */}
                     <div className="w-6/12 flex">
-                        <div className="bg-white rounded-[32px] border border-blue-100 shadow-xl flex flex-col h-full w-full">    {/* 여기수정 위 2줄 ✅ 고정 높이 + flex 구조로 스크롤 */}
+                        <div className="bg-white rounded-lg border border-blue-100 shadow-xl flex flex-col h-full w-full">    {/* 여기수정 위 2줄 ✅ 고정 높이 + flex 구조로 스크롤 */}
                             {/* 카드 헤더 - 고정 */}
-                            <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 flex-shrink-0 rounded-t-[32px]">
+                            <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 flex-shrink-0 rounded-lg">
                                 <h3 className="font-black text-gray-800 flex items-center gap-2 text-lg">
                                     <span className="w-1.5 h-4 bg-indigo-500 rounded-full"></span>
                                     상세코드 목록
                                     {selectedMaster && (
-                                        <span className="ml-2 px-2 py-0.5 bg-indigo-50 text-indigo-500 text-[12px] rounded-md tracking-tighter">
+                                        <span className="ml-2 px-2 py-0.5 bg-indigo-50 text-indigo-500 text-[12px] rounded-lg tracking-tighter">
                                             {selectedMaster} ({detailsData.length})
                                         </span>
                                     )}
@@ -368,7 +375,7 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
                                                         <td className="px-8 py-4">{item.dtl_nm}</td>
                                                         <td className="px-8 py-4 text-center text-gray-500">{item.sort_ord}</td>
                                                         <td className="px-8 py-4 text-center">
-                                                            <span className={`px-2 py-1 rounded-md text-[10px] font-black
+                                                            <span className={`px-2 py-1 rounded-lg text-[10px] font-black
                                                             ${item.use_yn === 'Y' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
                                                                 {item.use_yn === 'Y' ? '사용' : '미사용'}
                                                             </span>

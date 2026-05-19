@@ -183,8 +183,8 @@ export default function VillageInfoCreate() {
     return (
         <MainLayout>
             {/* 상단 헤더 섹션 (처음부터 블루 네온 적용된 버전) */}
-            {/* <div className="flex items-center justify-between mb-8 p-8 bg-white rounded-3xl border border-blue-50/50 shadow-[0_8px_30px_rgba(37,99,235,0.06)] transition-all hover:shadow-xl hover:border-blue-100"> */}
-            <div className="flex items-center justify-between mb-8 p-8 bg-white rounded-3xl border border-blue-100 shadow-xl transition-all">
+            {/* <div className="flex items-center justify-between mb-8 p-8 bg-white rounded-lg border border-blue-50/50 shadow-[0_8px_30px_rgba(37,99,235,0.06)] transition-all hover:shadow-xl hover:border-blue-100"> */}
+            <div className="flex items-center justify-between mb-8 p-8 bg-gray-200/20 rounded-lg border border-blue-100 shadow-xl transition-all">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-lg">동상면</span>
@@ -193,14 +193,14 @@ export default function VillageInfoCreate() {
                     <p className="text-gray-500 font-medium">완주군 동상면 사봉리 123-12</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-2xl hover:bg-gray-200 transition-all">임시저장</button>
+                    <button className="px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-lg hover:bg-gray-200 transition-all">임시저장</button>
                     {/* 정보수정 버튼의 그림자도 shadow-lg로 강화하면 더 세련되어 보입니다 */}
-                    <button className="px-6 py-3 bg-blue-600 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">정보수정</button>
+                    <button className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">정보수정</button>
                 </div>
             </div>
 
             {/* 탭 네비게이션 */}
-            <div className="flex gap-2 mb-6 p-1.5 bg-gray-100/50 rounded-2xl w-fit">
+            <div className="flex gap-2 mb-6 p-1.5 bg-gray-100/50 rounded-lg w-fit">
                 {tabs.map((tab) => (
                     <button
                         key={tab}
@@ -216,32 +216,32 @@ export default function VillageInfoCreate() {
             </div>
 
             {/* 탭 콘텐츠 영역 */}
-            {/* <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-10"> */}
-            <div className="bg-white rounded-[32px] border border-blue-100 shadow-[0_10px_40px_rgba(37,99,235,0.15)] p-10 transition-all">
+            {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10"> */}
+            <div className="bg-gray-500/50 rounded-lg border border-blue-100 shadow-[0_10px_40px_rgba(37,99,235,0.15)] p-10 transition-all">
                 {activeTab === '기본정보' && (
                     <div className="space-y-10">
                         {/* 섹션 1: 마을기본정보 */}
-                        <section className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm">
+                        <section className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
                             <div className="flex items-center gap-3 mb-8">
-                                <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
                                 <h3 className="text-xl font-bold text-gray-950">마을기본정보</h3>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">마을명</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">마을명</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg"
+                                        className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                         defaultValue="밤티 마을"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">사업장 주소</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">사업장 주소</label>
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className="w-full p-4 bg-gray-50 border-none rounded-2xl font-semibold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg"
+                                            className="w-full p-4 bg-gray-200 border-none rounded-lg font-semibold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                             value={businessAddress}
                                             // readOnly
                                             onDoubleClick={() => {
@@ -253,55 +253,55 @@ export default function VillageInfoCreate() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">공동체 법인명</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">공동체 법인명</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg"
+                                        className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                         placeholder="공동체 법인 (마을회사)명을 입력하세요"
                                         // defaultValue="밤티 마을"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">세대수</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">세대수</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-2xl font-bold text-blue-600 focus:ring-2 focus:ring-blue-100 text-lg"
+                                        className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-lg font-bold text-blue-600 focus:ring-2 focus:ring-blue-100 text-md"
                                         value={households}
                                         onChange={(e) => handleNumberInput(e, setHouseholds)}
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">주민수</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">주민수</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-2xl font-bold text-blue-600 focus:ring-2 focus:ring-blue-100 text-lg"
+                                        className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-lg font-bold text-blue-600 focus:ring-2 focus:ring-blue-100 text-md"
                                         value={population}
                                         onChange={(e) => handleNumberInput(e, setPopulation)}
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">이장명</label>
-                                    {/* <input type="text" className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 font-bold text-blue-600 text-lg" defaultValue="김철수" /> */}
-                                    <input type="text" className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg" defaultValue="김철수" />
+                                    <label className="text-sm font-bold text-gray-500 ml-1">이장명</label>
+                                    {/* <input type="text" className="p-4 bg-blue-50/50 rounded-lg border border-blue-100 font-bold text-blue-600 text-lg" defaultValue="김철수" /> */}
+                                    <input type="text" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="김철수" />
                                 </div>
                             </div>
                         </section>
 
                         {/* 섹션 2: 대표자 정보 */}
-                        <section className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm">
+                        <section className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
                             <div className="flex items-center gap-3 mb-8">
-                                <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
                                 <h3 className="text-xl font-bold text-gray-950">대표자 정보</h3>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">성명</label>
-                                    <input type="text" className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg" />
+                                    <label className="text-sm font-bold text-gray-500 ml-1">성명</label>
+                                    <input type="text" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">연락처</label>
-                                    <input type="text" className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg"
+                                    <label className="text-sm font-bold text-gray-500 ml-1">연락처</label>
+                                    <input type="text" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                         // value에서 포맷팅 함수로 감싸주는 게 핵심입니다
                                         value={formatPhoneNumber(phoneRep)}
                                         onChange={(e) => handleNumberInput(e, setPhoneRep)}
@@ -310,11 +310,11 @@ export default function VillageInfoCreate() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">생년월일</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">생년월일</label>
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className={`w-full p-4 bg-gray-50 rounded-2xl font-bold text-gray-900 focus:ring-2 text-lg 
+                                            className={`w-full p-4 bg-gray-100 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
                                                       ${birthDateErrorRep ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
                                             value={formatBirthDate(birthDateRep)}
                                             onChange={(e) => handleBirthDateChange(e, setBirthDateRep, setBirthDateErrorRep)}
@@ -331,9 +331,9 @@ export default function VillageInfoCreate() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">연령</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">연령</label>
                                     <input type="text" 
-                                           className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg" value={ageRep} readOnly
+                                           className="w-full p-4 bg-gray-100 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" value={ageRep} readOnly
                                            placeholder="생년월일 입력 시 자동 적용 됩니다."
                                            readOnly
                                            value={ageRep}
@@ -341,42 +341,42 @@ export default function VillageInfoCreate() {
                                 </div>
                                  {/* 성별 선택 박스 */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">성별</label>
-                                    <select className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg appearance-none cursor-pointer" defaultValue="남성" >
+                                    <label className="text-sm font-bold text-gray-500 ml-1">성별</label>
+                                    <select className="w-full p-4 bg-gray-100 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer" defaultValue="남성" >
                                         <option value="남성">남성</option>
                                         <option value="여성">여성</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">활동유형</label>
-                                    <select className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg appearance-none cursor-pointer">
+                                    <label className="text-sm font-bold text-gray-500 ml-1">활동유형</label>
+                                    <select className="w-full p-4 bg-gray-100 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
                                         <option value="선택">선택</option>
                                         <option value="마을공동체">무보수명예직</option>
                                         <option value="사회적협동조합">유보수직</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">E-메일</label>
-                                    <input type="email" className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg" defaultValue="" />
+                                    <label className="text-sm font-bold text-gray-500 ml-1">E-메일</label>
+                                    <input type="email" className="w-full p-4 bg-gray-100 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
                                 </div>
                             </div>
                         </section>
 
                         {/* 섹션 2-2: 실무자 정보 */}
-                        <section className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm">
+                        <section className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
                             <div className="flex items-center gap-3 mb-8">
-                                <div className="w-1.5 h-6 bg-green-600 rounded-full"></div>
+                                <div className="w-1.5 h-6 bg-green-600 rounded-lg"></div>
                                 <h3 className="text-xl font-bold text-gray-950">실무자 정보</h3>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">성명</label>
-                                    <input type="text" className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg" defaultValue="" />
+                                    <label className="text-sm font-bold text-gray-500 ml-1">성명</label>
+                                    <input type="text" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">연락처</label>
-                                    <input type="text" className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg"
+                                    <label className="text-sm font-bold text-gray-500 ml-1">연락처</label>
+                                    <input type="text" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                         // value에서 포맷팅 함수로 감싸주는 게 핵심입니다
                                         value={formatPhoneNumber(phoneWorker)}
                                         onChange={(e) => handleNumberInput(e, setPhoneWorker)}
@@ -389,7 +389,7 @@ export default function VillageInfoCreate() {
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className={`w-full p-4 bg-gray-50 rounded-2xl font-bold text-gray-900 focus:ring-2 text-lg 
+                                            className={`w-full p-4 bg-gray-200 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
                                                       ${birthDateErrorWorker ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
                                             value={formatBirthDate(birthDateWorker)}
                                             onChange={(e) => handleBirthDateChange(e, setBirthDateWorker, setBirthDateErrorWorker)}
@@ -406,9 +406,9 @@ export default function VillageInfoCreate() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">연령</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">연령</label>
                                     <input type="text" 
-                                           className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg" value={ageRep} readOnly
+                                           className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" value={ageRep} readOnly
                                            placeholder="생년월일 입력 시 자동 적용 됩니다."
                                            readOnly
                                            value={ageWorker}
@@ -416,31 +416,31 @@ export default function VillageInfoCreate() {
                                 </div>
                                 {/* 성별 선택 박스 */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">성별</label>
-                                    <select className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg appearance-none cursor-pointer" defaultValue="여성" >
+                                    <label className="text-sm font-bold text-gray-500 ml-1">성별</label>
+                                    <select className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer" defaultValue="여성" >
                                         <option value="남성">남성</option>
                                         <option value="여성">여성</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">활동유형</label>
-                                    <select className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg appearance-none cursor-pointer">
+                                    <label className="text-sm font-bold text-gray-500 ml-1">활동유형</label>
+                                    <select className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
                                         <option value="선택">선택</option>
                                         <option value="마을공동체">유보수직</option>
                                         <option value="사회적협동조합">단기계약직</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">E-메일</label>
-                                    <input type="email" className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg" defaultValue="" />
+                                    <label className="text-sm font-bold text-gray-500 ml-1">E-메일</label>
+                                    <input type="email" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
                                 </div>
                             </div>
                         </section>
 
                         {/* 섹션 3: 운영 및 설립 정보 */}
-                        <section className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm">
+                        <section className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
                             <div className="flex items-center gap-3 mb-8">
-                                <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
                                 <h3 className="text-xl font-bold text-gray-950">설립 및 목적</h3>
                             </div>
 
@@ -448,8 +448,8 @@ export default function VillageInfoCreate() {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                                 {/* 1. 설립목적 선택 박스 */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">설립목적</label>
-                                    <select className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg appearance-none cursor-pointer">
+                                    <label className="text-sm font-bold text-gray-500 ml-1">설립목적</label>
+                                    <select className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
                                         <option value="선택">선택</option>
                                         <option value="일자리창출">일자리창출</option>
                                         <option value="주민화합">주민화합</option>
@@ -459,8 +459,8 @@ export default function VillageInfoCreate() {
 
                                 {/* 2. 설립유형 선택 박스 */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">설립유형</label>
-                                    <select className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg appearance-none cursor-pointer">
+                                    <label className="text-sm font-bold text-gray-500 ml-1">설립유형</label>
+                                    <select className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
                                         <option value="선택">선택</option>
                                         <option value="소득창출형">소득창출형</option>
                                         <option value="마을화합형">마을화합형</option>
@@ -470,8 +470,8 @@ export default function VillageInfoCreate() {
 
                                 {/* 3. 법인유형 선택 박스 */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">법인유형</label>
-                                    <select className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg appearance-none cursor-pointer">
+                                    <label className="text-sm font-bold text-gray-500 ml-1">법인유형</label>
+                                    <select className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
                                         <option value="선택">선택</option>
                                         <option value="마을회">마을회</option>
                                         <option value="영농조합법인">영농조합법인</option>
@@ -482,11 +482,11 @@ export default function VillageInfoCreate() {
 
                                 {/* 4. 설립시기 선택 (년-월-일 달력 적용) */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">설립일자</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">설립일자</label>
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className={`w-full p-4 bg-gray-50 rounded-2xl font-bold text-gray-900 focus:ring-2 text-lg 
+                                            className={`w-full p-4 bg-gray-200 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
                                                       ${establishmentDateError ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
                                             value={formatBirthDate(establishmentDate)}
                                             onChange={(e) => handleBirthDateChange(e, setEstablishmentDate, setEstablishmentDateError)}
@@ -505,13 +505,13 @@ export default function VillageInfoCreate() {
                             </div>
 
                             {/* 하단 주요 제품 및 활동 입력 영역 (이전 수정 내용 유지) */}
-                            <div className="p-8 bg-blue-600 rounded-3xl text-white shadow-lg shadow-blue-100 space-y-6">
+                            <div className="p-8 bg-blue-600 rounded-lg text-white shadow-lg shadow-blue-100 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-sm font-bold opacity-70 ml-1">주요 제품</label>
                                         <input
                                             type="text"
-                                            className="w-full p-4 bg-white/10 border border-white/20 rounded-2xl font-bold text-white placeholder:text-white/40 focus:ring-2 focus:ring-white/30 text-lg backdrop-blur-md"
+                                            className="w-full p-4 bg-white/10 border border-white/20 rounded-lg font-bold text-white placeholder:text-white/40 focus:ring-2 focus:ring-white/30 text-md backdrop-blur-md"
                                             defaultValue="썰매체험, 곤충체험, 산촌체험"
                                         />
                                     </div>
@@ -519,7 +519,7 @@ export default function VillageInfoCreate() {
                                         <label className="text-sm font-bold opacity-70 ml-1">주요 활동</label>
                                         <input
                                             type="text"
-                                            className="w-full p-4 bg-white/10 border border-white/20 rounded-2xl font-bold text-white placeholder:text-white/40 focus:ring-2 focus:ring-white/30 text-lg backdrop-blur-md"
+                                            className="w-full p-4 bg-white/10 border border-white/20 rounded-lg font-bold text-white placeholder:text-white/40 focus:ring-2 focus:ring-white/30 text-md backdrop-blur-md"
                                             defaultValue="마을 자원을 활용한 계절별 체험 프로그램 위주 운영"
                                         />
                                     </div>
@@ -528,15 +528,15 @@ export default function VillageInfoCreate() {
                         </section>
 
                         {/* 섹션 4: 기타 정보 */}
-                        <section className="p-8 bg-white rounded-3xl border border-gray-200 shadow-sm">
+                        <section className="p-8 bg-white rounded-lg border border-gray-200 shadow-sm">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                 {/* 홈페이지 정보 섹션 */}
                                 <div className="space-y-3">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">홈페이지(SNS) 유무</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">홈페이지(SNS) 유무</label>
                                     <div className="flex flex-col sm:flex-row gap-4">
                                         {/* 선택 박스 (기본값: 없음) */}
                                         <select
-                                            className="w-full sm:w-32 p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-lg appearance-none cursor-pointer"
+                                            className="w-full sm:w-32 p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer"
                                             defaultValue="없음"
                                             onChange={(e) => {
                                                 const inputWrapper = document.getElementById('homepage-input-wrapper');
@@ -560,7 +560,7 @@ export default function VillageInfoCreate() {
                                             <input
                                                 type="text"
                                                 placeholder="https://example.com"
-                                                className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-2xl font-bold text-blue-600 focus:ring-2 focus:ring-blue-200 text-lg"
+                                                className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-lg font-bold text-blue-600 focus:ring-2 focus:ring-blue-200 text-md"
                                             />
                                         </div>
 
@@ -572,8 +572,8 @@ export default function VillageInfoCreate() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">공적자금 지원현황</label>
-                                    <div className="p-4 bg-gray-50 rounded-2xl border border-transparent font-bold text-gray-900 text-sm">
+                                    <label className="text-sm font-bold text-gray-500 ml-1">공적자금 지원현황</label>
+                                    <div className="p-4 bg-gray-50 rounded-lg border border-transparent font-bold text-gray-900 text-sm">
                                         별도 탭(지원사업)에서 상세 내역 확인 가능
                                     </div>
                                 </div>
@@ -586,15 +586,15 @@ export default function VillageInfoCreate() {
                     <div className="space-y-8">
                         {/* 1. 요약 통계 카드 */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                            <div className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
+                            <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
                                 <p className="text-sm font-bold text-blue-400 mb-1">총 지원 건수</p>
                                 <p className="text-2xl font-black text-blue-700 text-center">6건</p>
                             </div>
-                            <div className="bg-indigo-50 p-6 rounded-3xl border border-indigo-100">
+                            <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
                                 <p className="text-sm font-bold text-indigo-400 mb-1">누적 지원 금액</p>
                                 <p className="text-2xl font-black text-indigo-700 text-center">838,600 <span className="text-sm font-bold">천원</span></p>
                             </div>
-                            <div className="bg-gray-50 p-6 rounded-3xl border border-gray-200 text-gray-400">
+                            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 text-gray-400">
                                 <p className="text-sm font-bold mb-1">최근 지원일</p>
                                 <p className="text-2xl font-black italic text-center">2019.06.12</p>
                             </div>
@@ -604,13 +604,13 @@ export default function VillageInfoCreate() {
                         <section>
                             <div className="flex items-center justify-between mb-6 px-2">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                    <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
                                     <h3 className="text-xl font-bold text-gray-950">연도별 세부 지원내역</h3>
                                 </div>
                                 <div className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Unit: KRW (1,000)</div>
                             </div>
 
-                            <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-x-auto">
+                            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
                                 <table className="w-full text-center text-sm">
                                     <thead>
                                         <tr className="bg-gray-50/80 border-b border-gray-200">
@@ -655,7 +655,7 @@ export default function VillageInfoCreate() {
                         </section>
 
                         {/* 3. 안내 문구 */}
-                        <div className="p-6 bg-orange-50 rounded-2xl border border-orange-100 flex items-center gap-4">
+                        <div className="p-6 bg-orange-50 rounded-lg border border-orange-100 flex items-center gap-4">
                             <span className="text-2xl">💡</span>
                             <p className="text-sm text-orange-700 font-medium">
                                 위 지원 내역은 시스템에 등록된 공식 자료를 바탕으로 하며, 상세 증빙 서류는 <strong>[시설/장비]</strong> 탭의 자산 목록과 대조하여 확인하시기 바랍니다.
@@ -668,15 +668,15 @@ export default function VillageInfoCreate() {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
-                                <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
                                 <h3 className="text-xl font-bold text-gray-950">4. 매출액(만원) / 일자리 수(명)</h3>
                             </div>
-                            <button className="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center gap-2">
+                            <button className="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center gap-2">
                                 <span>➕</span> 매출등록
                             </button>
                         </div>
 
-                        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                             <table className="w-full text-center">
                                 <thead>
                                     <tr className="bg-gray-50/80 border-b border-gray-200">
@@ -718,14 +718,14 @@ export default function VillageInfoCreate() {
                         <section>
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                    <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
                                     <h3 className="text-xl font-bold text-gray-950">장비(가공·집기) 지원현황</h3>
                                 </div>
                                 <span className="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">단위: 천원</span>
                             </div>
 
                             {/* <div className="overflow-x-auto bg-white rounded-[32px] border border-blue-100 shadow-[0_10px_40px_rgba(37,99,235,0.15)] transition-all"> */}
-                            <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                                 <table className="w-full text-left">
                                     <thead>
                                         <tr className="bg-gray-50/50 border-b border-gray-200">
@@ -768,7 +768,7 @@ export default function VillageInfoCreate() {
                         <div className="space-y-6">
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                    <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
                                     <h3 className="text-xl font-bold text-gray-950">사업장 전경 이미지</h3>
                                 </div>
                                 <button className="px-5 py-2.5 bg-gray-950 text-white font-bold rounded-xl hover:bg-black transition-all flex items-center gap-2">
@@ -785,7 +785,7 @@ export default function VillageInfoCreate() {
                                     { title: '만경강 발원샘', desc: '마을 스토리텔링 연계 자원' },
                                 ].map((img, i) => (
                                     <div key={i} className="group relative cursor-pointer">
-                                        <div className="aspect-video bg-gray-100 rounded-3xl mb-3 overflow-hidden border border-gray-200 flex items-center justify-center text-gray-300 font-bold text-lg group-hover:bg-gray-200 transition-all">
+                                        <div className="aspect-video bg-gray-100 rounded-lg mb-3 overflow-hidden border border-gray-200 flex items-center justify-center text-gray-300 font-bold text-lg group-hover:bg-gray-200 transition-all">
                                             PHOTO AREA
                                         </div>
                                         <button className="absolute top-4 right-4 p-2.5 bg-red-500/90 hover:bg-red-600 text-white rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm" title="삭제">
@@ -811,7 +811,7 @@ export default function VillageInfoCreate() {
                                 { date: '2026.04.08', visitor: '최현주 외 4명', content: '현실적으로 운영이 멈춘 상태로 보임. 마을이장 장종수님이 협의회 참석 예정' },
                                 { date: '2021.03', visitor: '최은아 외 2명', content: '온난화로 인한 얼음 썰매장 개장 불가. 대체사업 발굴 및 컨설팅 추진 필요' },
                             ].map((log, i) => (
-                                <div key={i} className="p-6 bg-gray-50 rounded-2xl border border-gray-200 relative overflow-hidden group">
+                                <div key={i} className="p-6 bg-gray-50 rounded-lg border border-gray-200 relative overflow-hidden group">
                                     <div className="absolute left-0 top-0 w-1 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-all"></div>
                                     <div className="flex justify-between items-start mb-4">
                                         <span className="text-blue-600 font-bold font-mono">{log.date}</span>

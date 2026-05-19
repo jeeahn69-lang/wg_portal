@@ -5,15 +5,15 @@ import './index.css';
 import { TabProvider } from './context/TabContext'; // 1. TabProvider 추가
 
 
-// 2. WanjuPortalV2 컴포넌트 불러오기를 할때는 아래 주석을 해제하고, createInertiaApp 부분은 주석 처리합니다.
-// import WanjuPortalV2 from './Pages/village/wanju-portal-v2'; // 불러오기
+// // 2. WanjuPortalV2 컴포넌트 불러오기를 할때는 아래 주석을 해제하고, createInertiaApp 부분은 주석 처리합니다.
+// import WanjuPortalV3 from './Pages/village/wanju-portal-v3'; // 불러오기
 
 
 // const el = document.getElementById('root'); // index.html의 id 확인 (보통 'app' 또는 'root')
 
 // createRoot(el).render(
 //   <React.StrictMode>
-//     <WanjuPortalV2 />
+//     <WanjuPortalV3 />
 //   </React.StrictMode>
 // );
 

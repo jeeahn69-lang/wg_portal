@@ -15,7 +15,7 @@ class SystemConfig(models.Model):
 
 
 class CommonCodeMas(models.Model):
-    """공통코드 대분류 테이블 (sy_comcode_bas)"""
+    """공통코드 대분류 테이블 (sys_comcode_bas)"""
     master_cd = models.CharField(max_length=20, unique=True, verbose_name="대분류 코드", primary_key=True)
     master_nm = models.CharField(max_length=100, verbose_name="대분류명")
     use_yn = models.CharField(max_length=1, choices=[('Y', '사용'), ('N', '미사용')], default='Y', verbose_name="사용여부")
@@ -26,14 +26,15 @@ class CommonCodeMas(models.Model):
     class Meta:
         verbose_name = "공통코드 대분류"
         verbose_name_plural = "공통코드 대분류"
-        db_table = 'sy_comcode_bas'
+        db_table = 'sys_comcode_bas'
+        managed = False  # DB에서 직접 관리하신다면 False, Django가 관리하게 하려면 True
 
     def __str__(self):
         return f"[{self.master_cd}] {self.master_nm}"
 
 
 class CommonCodeDtl(models.Model):
-    """공통코드 소분류 테이블 (sy_comcode_dtl)"""
+    """공통코드 소분류 테이블 (sys_comcode_dtl)"""
     # 2026.04.28 del_idx 반드시 추가 
     dtl_idx = models.AutoField(primary_key=True, verbose_name="소분류 PK")
     master_cd = models.ForeignKey(CommonCodeMas, on_delete=models.CASCADE, verbose_name="대분류 코드", db_column='master_cd')
@@ -47,7 +48,8 @@ class CommonCodeDtl(models.Model):
     class Meta:
         verbose_name = "공통코드 소분류"
         verbose_name_plural = "공통코드 소분류"
-        db_table = 'sy_comcode_dtl'
+        db_table = 'sys_comcode_dtl'
+        managed = False
         unique_together = [['master_cd', 'dtl_cd']]
         ordering = ['sort_ord']
 

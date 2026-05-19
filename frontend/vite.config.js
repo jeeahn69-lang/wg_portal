@@ -8,8 +8,8 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
-    server: {
-    host: '127.0.0.1', // localhost보다 127.0.0.1이 Django와의 통신에서 더 안정적입니다.
+  server: {
+    host: '127.0.0.1',
     port: 5173,
     cors: true,
     strictPort: true,
@@ -17,7 +17,28 @@ export default defineConfig({
     hmr: {
       host: '127.0.0.1',
     },
-  }, // <-- 여기에 콤마(,)가 반드시 있어야 합니다!
+    // [추가] 백엔드 API 프록시 설정
+    proxy: {
+      '/system': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
+      },
+      '/accounts': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
+      },
+      '/village': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
+      },
+    },
+  },
 
   build: {
     outDir: path.resolve(__dirname, '../backend/static/dist'), // 절대 경로로 지정하는 것이 안전합니다.

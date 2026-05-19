@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-^^nr%*%6lq+)pd)s_@1oy(^l@akc)ua(lxnu0h#f=**7il$zg$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # 개발 환경에서 모든 호스트 허용 (프로덕션에서는 제한해야 함)
 
 
 # Application definition
@@ -248,3 +248,5 @@ CSRF_COOKIE_SECURE = False
 # 3. 도메인 설정 (비어있거나 127.0.0.1이어야 합니다)
 SESSION_COOKIE_DOMAIN = None
 
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

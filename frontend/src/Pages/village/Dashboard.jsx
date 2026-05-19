@@ -68,13 +68,13 @@ export default function Dashboard() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {posts.map((post) => (
-                <tr key={post.id} className="hover:bg-blue-50/20 transition-colors group cursor-pointer">
-                  <td className="px-6 py-6 font-mono text-sm text-gray-500 font-semibold tracking-tighter">{post.id}</td>
-                  <td className="px-6 py-6 text-gray-950 font-semibold group-hover:text-blue-700">{post.title}</td>
-                  <td className="px-6 py-6 text-gray-600 text-sm font-medium">{post.author}</td>
-                  <td className="px-6 py-6 text-gray-500 text-sm italic">{post.date}</td>
+                <tr key={post.id} className="hover:bg-blue-50/10 transition-colors group cursor-pointer">
+                  <td className="px-6 py-5 font-mono text-sm text-gray-500 font-semibold tracking-tighter">{post.id}</td>
+                  <td className="px-6 py-5 text-gray-950 font-semibold group-hover:text-blue-700">{post.title}</td>
+                  <td className="px-6 py-5 text-gray-600 text-sm font-medium">{post.author}</td>
+                  <td className="px-6 py-5 text-gray-500 text-sm italic">{post.date}</td>
                   {/* 상태 태그 (장식용 데코) */}
-                  <td className="px-6 py-6 text-sm">
+                  <td className="px-6 py-5 text-sm">
                     <span className={`inline-flex px-4 py-1.5 rounded-full font-bold text-xs ${post.status === 'Payment Successful' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
                       {post.status}
                     </span>
