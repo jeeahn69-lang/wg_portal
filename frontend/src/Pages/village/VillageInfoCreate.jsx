@@ -232,7 +232,7 @@ export default function VillageInfoCreate() {
                                     <label className="text-sm font-bold text-gray-500 ml-1">마을명</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                         defaultValue="밤티 마을"
                                     />
                                 </div>
@@ -241,7 +241,7 @@ export default function VillageInfoCreate() {
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className="w-full p-4 bg-gray-200 border-none rounded-lg font-semibold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
+                                            className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-semibold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                             value={businessAddress}
                                             // readOnly
                                             onDoubleClick={() => {
@@ -256,7 +256,7 @@ export default function VillageInfoCreate() {
                                     <label className="text-sm font-bold text-gray-500 ml-1">공동체 법인명</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                         placeholder="공동체 법인 (마을회사)명을 입력하세요"
                                         // defaultValue="밤티 마을"
                                     />
@@ -265,7 +265,7 @@ export default function VillageInfoCreate() {
                                     <label className="text-sm font-bold text-gray-500 ml-1">세대수</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-lg font-bold text-blue-600 focus:ring-2 focus:ring-blue-100 text-md"
+                                        className="w-full p-4 bg-blue-100/50 border border-blue-100 rounded-lg font-bold text-blue-600 focus:ring-2 focus:ring-blue-100 text-md"
                                         value={households}
                                         onChange={(e) => handleNumberInput(e, setHouseholds)}
                                     />
@@ -274,7 +274,7 @@ export default function VillageInfoCreate() {
                                     <label className="text-sm font-bold text-gray-500 ml-1">주민수</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-lg font-bold text-blue-600 focus:ring-2 focus:ring-blue-100 text-md"
+                                        className="w-full p-4 bg-blue-100/50 border border-blue-100 rounded-lg font-bold text-blue-600 focus:ring-2 focus:ring-blue-100 text-md"
                                         value={population}
                                         onChange={(e) => handleNumberInput(e, setPopulation)}
                                     />
@@ -282,7 +282,7 @@ export default function VillageInfoCreate() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">이장명</label>
                                     {/* <input type="text" className="p-4 bg-blue-50/50 rounded-lg border border-blue-100 font-bold text-blue-600 text-lg" defaultValue="김철수" /> */}
-                                    <input type="text" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="김철수" />
+                                    <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="김철수" />
                                 </div>
                             </div>
                         </section>
@@ -297,11 +297,11 @@ export default function VillageInfoCreate() {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">성명</label>
-                                    <input type="text" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" />
+                                    <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">연락처</label>
-                                    <input type="text" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
+                                    <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                         // value에서 포맷팅 함수로 감싸주는 게 핵심입니다
                                         value={formatPhoneNumber(phoneRep)}
                                         onChange={(e) => handleNumberInput(e, setPhoneRep)}
@@ -314,7 +314,7 @@ export default function VillageInfoCreate() {
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className={`w-full p-4 bg-gray-100 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
+                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
                                                       ${birthDateErrorRep ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
                                             value={formatBirthDate(birthDateRep)}
                                             onChange={(e) => handleBirthDateChange(e, setBirthDateRep, setBirthDateErrorRep)}
@@ -333,7 +333,7 @@ export default function VillageInfoCreate() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">연령</label>
                                     <input type="text" 
-                                           className="w-full p-4 bg-gray-100 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" value={ageRep} readOnly
+                                           className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" value={ageRep} readOnly
                                            placeholder="생년월일 입력 시 자동 적용 됩니다."
                                            readOnly
                                            value={ageRep}
@@ -342,14 +342,14 @@ export default function VillageInfoCreate() {
                                  {/* 성별 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">성별</label>
-                                    <select className="w-full p-4 bg-gray-100 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer" defaultValue="남성" >
+                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer" defaultValue="남성" >
                                         <option value="남성">남성</option>
                                         <option value="여성">여성</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">활동유형</label>
-                                    <select className="w-full p-4 bg-gray-100 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
+                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
                                         <option value="선택">선택</option>
                                         <option value="마을공동체">무보수명예직</option>
                                         <option value="사회적협동조합">유보수직</option>
@@ -357,7 +357,7 @@ export default function VillageInfoCreate() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">E-메일</label>
-                                    <input type="email" className="w-full p-4 bg-gray-100 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
+                                    <input type="email" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
                                 </div>
                             </div>
                         </section>
@@ -372,11 +372,11 @@ export default function VillageInfoCreate() {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">성명</label>
-                                    <input type="text" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
+                                    <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">연락처</label>
-                                    <input type="text" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
+                                    <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                         // value에서 포맷팅 함수로 감싸주는 게 핵심입니다
                                         value={formatPhoneNumber(phoneWorker)}
                                         onChange={(e) => handleNumberInput(e, setPhoneWorker)}
@@ -389,7 +389,7 @@ export default function VillageInfoCreate() {
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className={`w-full p-4 bg-gray-200 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
+                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
                                                       ${birthDateErrorWorker ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
                                             value={formatBirthDate(birthDateWorker)}
                                             onChange={(e) => handleBirthDateChange(e, setBirthDateWorker, setBirthDateErrorWorker)}
@@ -408,7 +408,7 @@ export default function VillageInfoCreate() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">연령</label>
                                     <input type="text" 
-                                           className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" value={ageRep} readOnly
+                                           className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" value={ageRep} readOnly
                                            placeholder="생년월일 입력 시 자동 적용 됩니다."
                                            readOnly
                                            value={ageWorker}
@@ -417,14 +417,14 @@ export default function VillageInfoCreate() {
                                 {/* 성별 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">성별</label>
-                                    <select className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer" defaultValue="여성" >
+                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer" defaultValue="여성" >
                                         <option value="남성">남성</option>
                                         <option value="여성">여성</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">활동유형</label>
-                                    <select className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
+                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
                                         <option value="선택">선택</option>
                                         <option value="마을공동체">유보수직</option>
                                         <option value="사회적협동조합">단기계약직</option>
@@ -432,7 +432,7 @@ export default function VillageInfoCreate() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">E-메일</label>
-                                    <input type="email" className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
+                                    <input type="email" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
                                 </div>
                             </div>
                         </section>
@@ -449,7 +449,7 @@ export default function VillageInfoCreate() {
                                 {/* 1. 설립목적 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">설립목적</label>
-                                    <select className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
+                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
                                         <option value="선택">선택</option>
                                         <option value="일자리창출">일자리창출</option>
                                         <option value="주민화합">주민화합</option>
@@ -460,7 +460,7 @@ export default function VillageInfoCreate() {
                                 {/* 2. 설립유형 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">설립유형</label>
-                                    <select className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
+                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
                                         <option value="선택">선택</option>
                                         <option value="소득창출형">소득창출형</option>
                                         <option value="마을화합형">마을화합형</option>
@@ -471,7 +471,7 @@ export default function VillageInfoCreate() {
                                 {/* 3. 법인유형 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">법인유형</label>
-                                    <select className="w-full p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
+                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
                                         <option value="선택">선택</option>
                                         <option value="마을회">마을회</option>
                                         <option value="영농조합법인">영농조합법인</option>
@@ -486,7 +486,7 @@ export default function VillageInfoCreate() {
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className={`w-full p-4 bg-gray-200 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
+                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
                                                       ${establishmentDateError ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
                                             value={formatBirthDate(establishmentDate)}
                                             onChange={(e) => handleBirthDateChange(e, setEstablishmentDate, setEstablishmentDateError)}
@@ -536,7 +536,7 @@ export default function VillageInfoCreate() {
                                     <div className="flex flex-col sm:flex-row gap-4">
                                         {/* 선택 박스 (기본값: 없음) */}
                                         <select
-                                            className="w-full sm:w-32 p-4 bg-gray-200 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer"
+                                            className="w-full sm:w-32 p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer"
                                             defaultValue="없음"
                                             onChange={(e) => {
                                                 const inputWrapper = document.getElementById('homepage-input-wrapper');
@@ -573,7 +573,7 @@ export default function VillageInfoCreate() {
 
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">공적자금 지원현황</label>
-                                    <div className="p-4 bg-gray-50 rounded-lg border border-transparent font-bold text-gray-900 text-sm">
+                                    <div className="p-4 bg-gray-300/40 rounded-lg border border-transparent font-bold text-gray-900 text-sm">
                                         별도 탭(지원사업)에서 상세 내역 확인 가능
                                     </div>
                                 </div>
@@ -607,7 +607,7 @@ export default function VillageInfoCreate() {
                                     <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
                                     <h3 className="text-xl font-bold text-gray-950">연도별 세부 지원내역</h3>
                                 </div>
-                                <div className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Unit: KRW (1,000)</div>
+                                <div className="text-xs font-bold text-gray-950 uppercase tracking-tighter">Unit: KRW (1,000)</div>
                             </div>
 
                             <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
@@ -721,7 +721,8 @@ export default function VillageInfoCreate() {
                                     <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
                                     <h3 className="text-xl font-bold text-gray-950">장비(가공·집기) 지원현황</h3>
                                 </div>
-                                <span className="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">단위: 천원</span>
+                                {/* <span className="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">단위: 천원</span> */}
+                                <span  className="text-xs font-bold text-gray-950 uppercase tracking-tighter">Unit: KRW (1,000)</span>
                             </div>
 
                             {/* <div className="overflow-x-auto bg-white rounded-[32px] border border-blue-100 shadow-[0_10px_40px_rgba(37,99,235,0.15)] transition-all"> */}
