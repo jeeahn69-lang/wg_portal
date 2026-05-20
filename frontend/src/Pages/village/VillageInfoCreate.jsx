@@ -226,7 +226,7 @@ export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
     
     const renderPurposeOptions = () => {
         if (isPurposeLoading) {
-            return <option value="" disabled>불러오는 중...</option>;
+            return <option value="" disabled> 설립목적 불러오는 중...</option>;
         }
         if (!purposeOptions || purposeOptions.length === 0) {
             return null;
@@ -394,8 +394,6 @@ export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
                                            className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                            placeholder="생년월일 입력 시 자동 적용 됩니다."
                                            readOnly
-                                           placeholder="생년월일 입력 시 자동 적용 됩니다."
-                                           readOnly
                                            value={ageRep}
                                     />
                                 </div>
@@ -517,7 +515,8 @@ export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
                                         disabled={isPurposeLoading}
                                         className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
                                     >
-                                        <option value="선택">{isPurposeLoading ? '불러오는 중...' : '선택'}</option>
+                                        {/* <option value="선택">{isPurposeLoading ? '여기 불러오는 중...' : '선택'}</option> */}
+                                        <option>선택</option>
                                         {renderPurposeOptions()}
                                     </select>
                                 </div>
