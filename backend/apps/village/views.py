@@ -38,34 +38,55 @@ def board_list(request): #BoardList_list(request):
     # 'village/SubsidyList'는 프론트엔드 Pages 폴더 내 해당 컴포넌트 경로입니다.
     return inertia_render(request, 'village/BoardList')
 
-def _fetch_establishment_purposes():
-    """설립목적 공통코드(BC0001) 목록 조회"""
+def _fetch_comcode_by_master(master_cd):
+    """공통코드 소분류 목록 조회"""
     query = """
-        SELECT dtl_cd, dtl_nm 
-        FROM sys_comcode_dtl 
-        WHERE master_cd = 'BC0001' AND use_yn = 'Y'
+        SELECT dtl_cd, dtl_nm
+        FROM sys_comcode_dtl
+        WHERE master_cd = %s AND use_yn = 'Y'
         ORDER BY dtl_cd ASC
     """
     with connection.cursor() as cursor:
-        cursor.execute(query)
+        cursor.execute(query, [master_cd])
         rows = cursor.fetchall()
     
         return [{'code': row[0], 'name': row[1]} for row in rows]
 
 
+
 @require_http_methods(["GET"])
 def establishment_purposes(request):
     """설립목적 콤보박스용 JSON API"""
-    return JsonResponse(_fetch_establishment_purposes(), safe=False)
+    return JsonResponse(_fetch_comcode_by_master('BC0001'), safe=False)
 
+@require_http_methods(["GET"])
+def establishment_types(request):
+    """설립유형(BC0002) 콤보박스용 JSON API"""
+    return JsonResponse(_fetch_comcode_by_master('BC0002'), safe=False)
+
+@require_http_methods(["GET"])
+def corporation_types(request):
+    """법인유형(BC0003) 콤보박스용 JSON API"""
+    return JsonResponse(_fetch_comcode_by_master('BC0003'), safe=False)
+
+@require_http_methods(["GET"])
+def repactivity_types(request):
+    """대표자 활동유형(BC0004) 콤보박스용 JSON API"""
+    return JsonResponse(_fetch_comcode_by_master('BC0004'), safe=False)
+
+@require_http_methods(["GET"])
+def workactivity_types(request):
+    """실무자 활동유형(BC0004) 콤보박스용 JSON API"""
+    return JsonResponse(_fetch_comcode_by_master('BC0004'), safe=False)
 
 def village_info_create(request):
-    """
-    마을 정보 등록 화면을 렌더링하면서 설립목적 공통코드(BC0001) 목록을 함께 전달
-    """
-    purposes = _fetch_establishment_purposes()
-    
-    # Inertia를 통해 화면을 열 때 'purposes' 데이터를 담아서 던져줍니다.
+    """마을 정보 등록 화면 렌더링 (공통코드 초기값 포함)"""
     return inertia_render(request, 'village/VillageInfoCreate', {
-        'purposes': purposes
+        'purposes': _fetch_comcode_by_master('BC0001'),
+        'establishmentTypes': _fetch_comcode_by_master('BC0002'),
+        'corporationTypes': _fetch_comcode_by_master('BC0003'),
+        'repactivityTypes': _fetch_comcode_by_master('BC0004'),
+        'workactivityTypes': _fetch_comcode_by_master('BC0004'),
     })
+
+ 

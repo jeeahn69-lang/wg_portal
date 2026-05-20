@@ -2,19 +2,45 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from "../../layouts/MainLayout";
 import { useTabs } from '../../context/TabContext';
 
-export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
+export default function VillageInfoCreate({
+    purposes: initialPurposes = [],
+    establishmentTypes: initialEstablishmentTypes = [],
+    corporationTypes: initialCorporationTypes = [],
+    repactivityTypes: initialRepactivityTypes = [],
+    workactivityTypes: initialWorkactivityTypes = [],
+}) {
     const { openTabs, activeTabId } = useTabs();
     const currentTab = openTabs.find(tab => tab.id === activeTabId);
     const villageName = currentTab?.villageName || '밤티마을';
     const [activeTab, setActiveTab] = useState('기본정보');
     const tabs = ['기본정보', '지원사업', '매출/일자리', '시설/장비', '사업장 전경', '현장점검'];
 
-    // [추가] 설립목적 선택 값 상태 관리
-     // 설립목적 콤보박스 상태
-     const [selectedPurpose, setSelectedPurpose] = useState('선택');
-     const [purposeOptions, setPurposeOptions] = useState(initialPurposes);
-     const [isPurposeLoading, setIsPurposeLoading] = useState(false);
-     const [purposesLoaded, setPurposesLoaded] = useState(initialPurposes.length > 0);
+    // 설립목적(BC0001) 콤보박스 상태
+    const [selectedPurpose, setSelectedPurpose] = useState('선택');
+    const [purposeOptions, setPurposeOptions] = useState(initialPurposes);
+    const [isPurposeLoading, setIsPurposeLoading] = useState(false);
+    const [purposesLoaded, setPurposesLoaded] = useState(initialPurposes.length > 0);
+    // 설립유형(BC0002) 콤보박스 상태
+    const [selectedEstablishmentType, setSelectedEstablishmentType] = useState('선택');
+    const [establishmentTypeOptions, setEstablishmentTypeOptions] = useState(initialEstablishmentTypes);
+    const [isEstablishmentTypeLoading, setIsEstablishmentTypeLoading] = useState(false);
+    const [establishmentTypesLoaded, setEstablishmentTypesLoaded] = useState(initialEstablishmentTypes.length > 0);
+    // 법인유형(BC0003) 콤보박스 상태
+    const [selectedCorporationType, setSelectedCorporationType] = useState('선택');
+    const [corporationTypeOptions, setCorporationTypeOptions] = useState(initialCorporationTypes);
+    const [isCorporationTypeLoading, setIsCorporationTypeLoading] = useState(false);
+    const [corporationTypesLoaded, setCorporationTypesLoaded] = useState(initialCorporationTypes.length > 0);
+    // 대표자 활동유형(BC0004) 콤보박스 상태
+    const [selectedRepactivityType, setSelectedRepactivityType] = useState('선택');
+    const [repactivityTypeOptions, setRepactivityTypeOptions] = useState(initialRepactivityTypes);
+    const [isRepactivityTypeLoading, setIsRepactivityTypeLoading] = useState(false);
+    const [repactivityTypesLoaded, setRepactivityTypesLoaded] = useState(initialRepactivityTypes.length > 0);
+    // 실무자 활동유형(BC0004) 콤보박스 상태
+    const [selectedWorkactivityType, setSelectedWorkactivityType] = useState('선택');
+    const [workactivityTypeOptions, setWorkactivityTypeOptions] = useState(initialWorkactivityTypes);
+    const [isWorkactivityTypeLoading, setIsWorkactivityTypeLoading] = useState(false);
+    const [workactivityTypesLoaded, setWorkactivityTypesLoaded] = useState(initialWorkactivityTypes.length > 0);
+
 
     // 생년월일 상태 관리
     const [birthDateRep, setBirthDateRep] = useState(''); // 대표자
@@ -31,13 +57,47 @@ export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
     const [isScriptLoaded, setIsScriptLoaded] = useState(false); // Daum 스크립트 로드 상태
     const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 검색 팝업 열림 상태
 
-     // Inertia 초기 props로 설립목적이 전달된 경우 상태 동기화
+    // Inertia 초기 props 동기화
+    // 설립목적(BC0001) 콤보박스 상태 동기화
     useEffect(() => {
-        if (initialPurposes && initialPurposes.length > 0) {
+        if (initialPurposes?.length > 0) {
             setPurposeOptions(initialPurposes);
             setPurposesLoaded(true);
         }
     }, [initialPurposes]);
+    // 설립유형(BC0002) 콤보박스 상태 동기화
+    useEffect(() => {
+        if (initialEstablishmentTypes?.length > 0) {
+            setEstablishmentTypeOptions(initialEstablishmentTypes);
+            setEstablishmentTypesLoaded(true);
+        }
+    }, [initialEstablishmentTypes]);
+    // 법인유형(BC0003) 콤보박스 상태 동기화
+    useEffect(() => {
+        if (initialCorporationTypes?.length > 0) {
+            setCorporationTypeOptions(initialCorporationTypes);
+            setCorporationTypesLoaded(true);
+        }
+    }, [initialCorporationTypes]);
+
+    // 대표자 활동유형(BC0004) 콤보박스 상태 동기화
+    useEffect(() => {
+        if (initialRepactivityTypes?.length > 0) {
+            setRepactivityTypeOptions(initialRepactivityTypes);
+            setRepactivityTypesLoaded(true);
+        }
+    }, [initialRepactivityTypes]);
+
+    // 실무자 활동유형(BC0004) 콤보삭스 상태 동기화
+    useEffect(() => {
+        if (initialWorkactivityTypes?.length > 0) {
+            setWorkactivityTypeOptions(initialWorkactivityTypes);
+            setWorkactivityTypesLoaded(true);
+        }
+    }, [initialWorkactivityTypes]);
+    
+
+
     
     // Daum Postcode API 스크립트 동적 로드
     useEffect(() => {
@@ -195,45 +255,96 @@ export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
         }
     };
 
-    // 설립목적 데이터를 렌더링하는 함수
+    // 공통코드 데이터를 렌더링하는 함수
+    const mapComcodeRows = (data) => {
+        const rows = Array.isArray(data) ? data : [];
+        return rows.map((item) => ({
+            code: item.code ?? item.dtl_cd,
+            name: item.name ?? item.dtl_nm,
+        }));
+    };
 
     // 설립목적 공통코드(BC0001) DB 조회
-    const fetchEstablishmentPurposes = async () => {
-        if (purposesLoaded || isPurposeLoading) return;
-        setIsPurposeLoading(true);
+    const fetchComcodeOptions = async (url, label, loaded, isLoading, setOptions, setLoaded, setLoading) => {
+        if (loaded || isLoading) return;
+        setLoading(true);
         try {
-            const response = await fetch('/village/purposes/');
+            const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
-            const rows = Array.isArray(data) ? data : [];
-            const mapped = rows.map((item) => ({
-                code: item.code ?? item.dtl_cd,
-                name: item.name ?? item.dtl_nm,
-            }));
-            setPurposeOptions(mapped);
-            setPurposesLoaded(true);
+            console.log('[공통코드] 조회 데이터:', data);
+            setOptions(mapComcodeRows(data));
+            setLoaded(true);
         } catch (error) {
-            console.error('[설립목적] 공통코드 조회 실패:', error);
-            setPurposeOptions([]);
+            console.error(`[${label}] 공통코드 조회 실패:`, error);
+            setOptions([]);
         } finally {
-            setIsPurposeLoading(false);
+            setLoading(false);
         }
     };
     const handlePurposeSelectClick = () => {
-        fetchEstablishmentPurposes();
+        fetchComcodeOptions(
+            '/village/purposes/',
+            '설립목적',
+            purposesLoaded,
+            isPurposeLoading,
+            setPurposeOptions,
+            setPurposesLoaded,
+            setIsPurposeLoading,
+        );
     };
-
-    
-    const renderPurposeOptions = () => {
-        if (isPurposeLoading) {
-            return <option value="" disabled> 설립목적 불러오는 중...</option>;
+    const handleEstablishmentTypeSelectClick = () => {
+        fetchComcodeOptions(
+            '/village/establishment-types/',
+            '설립유형',
+            establishmentTypesLoaded,
+            isEstablishmentTypeLoading,
+            setEstablishmentTypeOptions,
+            setEstablishmentTypesLoaded,
+            setIsEstablishmentTypeLoading,
+        );
+    };
+    const handleCorporationTypeSelectClick = () => {
+        fetchComcodeOptions(
+            '/village/corporation-types/',
+            '법인유형',
+            corporationTypesLoaded,
+            isCorporationTypeLoading,
+            setCorporationTypeOptions,
+            setCorporationTypesLoaded,
+            setIsCorporationTypeLoading,
+        );
+    };
+    const handleRepActivityTypeSelectClick = () => {
+        fetchComcodeOptions(
+            '/village/repactivity-types/',
+            '활동유형',
+            repactivityTypesLoaded,
+            isRepactivityTypeLoading,
+            setRepactivityTypeOptions,
+            setRepactivityTypesLoaded,
+            setIsRepactivityTypeLoading,
+        );
+    };
+    const handleWorkActivityTypeSelectClick = () => {
+        fetchComcodeOptions(
+            '/village/workactivity-types/',
+            '활동유형',
+            workactivityTypesLoaded,
+            isWorkactivityTypeLoading,
+            setWorkactivityTypeOptions,
+            setWorkactivityTypesLoaded,
+            setIsWorkactivityTypeLoading,
+        );
+    };
+    const renderComcodeOptions = (options, isLoading, loadingLabel) => {
+        if (isLoading) {
+            return <option value="" disabled>{loadingLabel} 불러오는 중...</option>;
         }
-        if (!purposeOptions || purposeOptions.length === 0) {
-            return null;
-        }
-        return purposeOptions.map((purpose) => (
-            <option key={purpose.code} value={purpose.code}>
-                {purpose.name}
+        if (!options?.length) return null;
+        return options.map((item) => (
+            <option key={item.code} value={item.code}>
+                {item.name}
             </option>
         ));
     };
@@ -407,10 +518,16 @@ export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">활동유형</label>
-                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
-                                        <option value="선택">선택</option>
-                                        <option value="마을공동체">무보수명예직</option>
-                                        <option value="사회적협동조합">유보수직</option>
+                                    <select 
+                                        value={selectedRepactivityType}
+                                        onChange={(e) => setSelectedRepactivityType(e.target.value)}
+                                        onFocus={handleRepActivityTypeSelectClick}
+                                        onMouseDown={handleRepActivityTypeSelectClick}
+                                        disabled={isRepactivityTypeLoading}
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
+                                    >
+                                        <option value= "선택">{isRepactivityTypeLoading ? '불러오는 중...' : '선택'}</option>
+                                        {renderComcodeOptions(repactivityTypeOptions, isRepactivityTypeLoading, '활동유형')}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
@@ -480,12 +597,19 @@ export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
                                         <option value="여성">여성</option>
                                     </select>
                                 </div>
+                                 {/* 실무자 활동유형 구분 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">활동유형</label>
-                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
-                                        <option value="선택">선택</option>
-                                        <option value="마을공동체">유보수직</option>
-                                        <option value="사회적협동조합">단기계약직</option>
+                                    <select 
+                                        value={selectedWorkactivityType}
+                                        onChange={(e) => setSelectedWorkactivityType(e.target.value)}
+                                        onFocus={handleWorkActivityTypeSelectClick}
+                                        onMouseDown={handleWorkActivityTypeSelectClick}
+                                        disabled={isWorkactivityTypeLoading}
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
+                                    >
+                                        <option value= "선택">{isWorkactivityTypeLoading ? '불러오는 중...' : '선택'}</option>
+                                        {renderComcodeOptions(workactivityTypeOptions, isWorkactivityTypeLoading, '활동유형')}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
@@ -515,32 +639,40 @@ export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
                                         disabled={isPurposeLoading}
                                         className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
                                     >
-                                        {/* <option value="선택">{isPurposeLoading ? '여기 불러오는 중...' : '선택'}</option> */}
-                                        <option>선택</option>
-                                        {renderPurposeOptions()}
+                                        <option value="선택">{isPurposeLoading ? '불러오는 중...' : '선택'}</option>
+                                        {renderComcodeOptions(purposeOptions, isPurposeLoading, '설립목적')}
                                     </select>
                                 </div>
 
                                 {/* 2. 설립유형 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">설립유형</label>
-                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
-                                        <option value="선택">선택</option>
-                                        <option value="소득창출형">소득창출형</option>
-                                        <option value="마을화합형">마을화합형</option>
-                                        <option value="문화자원형">문화자원형</option>
+                                    <select
+                                        value={selectedEstablishmentType}
+                                        onChange={(e) => setSelectedEstablishmentType(e.target.value)}
+                                        onFocus={handleEstablishmentTypeSelectClick}
+                                        onMouseDown={handleEstablishmentTypeSelectClick}
+                                        disabled={isEstablishmentTypeLoading}
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
+                                    >
+                                        <option value="선택">{isEstablishmentTypeLoading ? '불러오는 중...' : '선택'}</option>
+                                        {renderComcodeOptions(establishmentTypeOptions, isEstablishmentTypeLoading, '설립유형')}
                                     </select>
                                 </div>
 
                                 {/* 3. 법인유형 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">법인유형</label>
-                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
-                                        <option value="선택">선택</option>
-                                        <option value="마을회">마을회</option>
-                                        <option value="영농조합법인">영농조합법인</option>
-                                        <option value="사회적협동조합">사회적협동조합</option>
-                                        <option value="정보화마을">정보화마을</option>
+                                    <select
+                                        value={selectedCorporationType}
+                                        onChange={(e) => setSelectedCorporationType(e.target.value)}
+                                        onFocus={handleCorporationTypeSelectClick}
+                                        onMouseDown={handleCorporationTypeSelectClick}
+                                        disabled={isCorporationTypeLoading}
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
+                                    >
+                                        <option value="선택">{isCorporationTypeLoading ? '불러오는 중...' : '선택'}</option>
+                                        {renderComcodeOptions(corporationTypeOptions, isCorporationTypeLoading, '법인유형')}
                                     </select>
                                 </div>
 
@@ -892,15 +1024,5 @@ export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
         </MainLayout >
     );
 }
-// // 설립목적 데이터를 렌더링하는 함수
-// const renderPurposeOptions = () => {
-//     if (!purposes || purposes.length === 0) {
-//         return <option value="">데이터 없음2</option>;
-//     }
-//     return purposes.map((purpose) => (
-//         <option key={purpose.code} value={purpose.code}>
-//             {purpose.name}
-//         </option>
-//     ));
-// };
+
 

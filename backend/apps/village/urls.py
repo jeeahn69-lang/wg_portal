@@ -26,6 +26,10 @@ urlpatterns = [
     # path('vlinfo/', views.village_info, name='village_info'),
     path('vlinfo/', views.village_info_create, name='village_info_create'),
     path('purposes/', views.establishment_purposes, name='establishment_purposes'),
+    path('establishment-types/', views.establishment_types, name='establishment_types'),
+    path('corporation-types/', views.corporation_types, name='corporation_types'),
+    path('repactivity-types/', views.repactivity_types, name='repactivity_types'),
+    path('workactivity-types/', views.workactivity_types, name='workactivity_types'),
 
     # 9. 마을매출정보
     path('sales/', views.village_sales, name='village_sales'),
@@ -33,5 +37,5 @@ urlpatterns = [
     # 8. 게시판 목록
     path('board/', views.board_list, name='board_list'),
 
-    
+
 ]
