@@ -403,6 +403,7 @@ export default function VillageInfoCreate({
                                         type="text"
                                         className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                         defaultValue="밤티 마을"
+                                        readOnly
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -923,10 +924,10 @@ export default function VillageInfoCreate({
 
                             {/* <div className="overflow-x-auto bg-white rounded-[32px] border border-blue-100 shadow-[0_10px_40px_rgba(37,99,235,0.15)] transition-all"> */}
                             <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-                                <table className="w-full text-left">
+                                <table className="w-full text-center">
                                     <thead>
                                         <tr className="bg-gray-50/50 border-b border-gray-200">
-                                            <th className="px-6 py-5 text-[14px] font-bold text-gray-700 uppercase tracking-widest text-center w-16">연번</th>
+                                            <th className="px-6 py-5 text-[14px] font-bold text-gray-700 uppercase tracking-widest text-center w-20">연번</th>
                                             <th className="px-6 py-5 text-[14px] font-bold text-gray-700 uppercase tracking-widest whitespace-nowrap">지원년월</th>
                                             <th className="px-6 py-5 text-[14px] font-bold text-gray-700 uppercase tracking-widest">지원사업명</th>
                                             <th className="px-6 py-5 text-[14px] font-bold text-gray-700 uppercase tracking-widest">품목</th>
