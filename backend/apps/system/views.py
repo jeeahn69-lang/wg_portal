@@ -13,9 +13,8 @@ from .models import CommonCodeMas, CommonCodeDtl, CommonCode
 logger = logging.getLogger(__name__)
 
 
-
-
 @login_required
+@csrf_exempt
 def comcode_manager(request):
     """공통코드 관리 페이지 - 대분류 및 소분류 코드 조회"""
     
@@ -64,7 +63,7 @@ def comcode_manager(request):
         }
     )
 
-
+@login_required
 @csrf_exempt
 @require_http_methods(["GET"])
 def get_detail_codes(request, master_cd):
