@@ -23,7 +23,9 @@ urlpatterns = [
     path('card/', views.village_card, name='village_card'),
 
     # 7. 마을정보관리 (슬래시(/) 추가로 경로 일관성 유지)
-    path('vlinfo/', views.village_info, name='village_info'),
+    # path('vlinfo/', views.village_info, name='village_info'),
+    path('vlinfo/', views.village_info_create, name='village_info_create'),
+    path('purposes/', views.establishment_purposes, name='establishment_purposes'),
 
     # 9. 마을매출정보
     path('sales/', views.village_sales, name='village_sales'),

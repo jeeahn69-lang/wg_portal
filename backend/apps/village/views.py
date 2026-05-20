@@ -4,6 +4,8 @@ from urllib3 import request
 from .models import Village
 from django.db import models
 from django.db import connection
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
 def village_list(request):
     villages = list(Village.objects.values())
@@ -36,26 +38,34 @@ def board_list(request): #BoardList_list(request):
     # 'village/SubsidyList'는 프론트엔드 Pages 폴더 내 해당 컴포넌트 경로입니다.
     return inertia_render(request, 'village/BoardList')
 
+def _fetch_establishment_purposes():
+    """설립목적 공통코드(BC0001) 목록 조회"""
+    query = """
+        SELECT dtl_cd, dtl_nm 
+        FROM sys_comcode_dtl 
+        WHERE master_cd = 'BC0001' AND use_yn = 'Y'
+        ORDER BY dtl_cd ASC
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+    
+        return [{'code': row[0], 'name': row[1]} for row in rows]
 
-# def village_info_create(request):
-#     """
-#     마을 정보 등록 화면을 렌더링하면서 설립목적 공통코드(BC001) 목록을 함께 전달
-#     """
-#     query = """
-#         SELECT dtl_cd, dtl_nm 
-#         FROM sys_comcode_dtl 
-#         WHERE master_cd = 'BC001' AND use_yn = 'Y'
-#         ORDER BY dtl_cd ASC
-#     """
+
+@require_http_methods(["GET"])
+def establishment_purposes(request):
+    """설립목적 콤보박스용 JSON API"""
+    return JsonResponse(_fetch_establishment_purposes(), safe=False)
+
+
+def village_info_create(request):
+    """
+    마을 정보 등록 화면을 렌더링하면서 설립목적 공통코드(BC0001) 목록을 함께 전달
+    """
+    purposes = _fetch_establishment_purposes()
     
-#     with connection.cursor() as cursor:
-#         cursor.execute(query)
-#         rows = cursor.fetchall()
-    
-#     # React(Props)로 보낼 데이터 포맷 가공
-#     purposes = [{'code': row[0], 'name': row[1]} for row in rows]
-    
-#     # Inertia를 통해 화면을 열 때 'purposes' 데이터를 담아서 던져줍니다.
-#     return inertia_render(request, 'village/VillageInfoCreate', {
-#         'purposes': purposes
-#     })
+    # Inertia를 통해 화면을 열 때 'purposes' 데이터를 담아서 던져줍니다.
+    return inertia_render(request, 'village/VillageInfoCreate', {
+        'purposes': purposes
+    })

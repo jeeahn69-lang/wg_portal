@@ -2,12 +2,19 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from "../../layouts/MainLayout";
 import { useTabs } from '../../context/TabContext';
 
-export default function VillageInfoCreate() {
+export default function VillageInfoCreate({  purposes: initialPurposes = [] }) {
     const { openTabs, activeTabId } = useTabs();
     const currentTab = openTabs.find(tab => tab.id === activeTabId);
     const villageName = currentTab?.villageName || '밤티마을';
     const [activeTab, setActiveTab] = useState('기본정보');
     const tabs = ['기본정보', '지원사업', '매출/일자리', '시설/장비', '사업장 전경', '현장점검'];
+
+    // [추가] 설립목적 선택 값 상태 관리
+     // 설립목적 콤보박스 상태
+     const [selectedPurpose, setSelectedPurpose] = useState('선택');
+     const [purposeOptions, setPurposeOptions] = useState(initialPurposes);
+     const [isPurposeLoading, setIsPurposeLoading] = useState(false);
+     const [purposesLoaded, setPurposesLoaded] = useState(initialPurposes.length > 0);
 
     // 생년월일 상태 관리
     const [birthDateRep, setBirthDateRep] = useState(''); // 대표자
@@ -24,6 +31,14 @@ export default function VillageInfoCreate() {
     const [isScriptLoaded, setIsScriptLoaded] = useState(false); // Daum 스크립트 로드 상태
     const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 검색 팝업 열림 상태
 
+     // Inertia 초기 props로 설립목적이 전달된 경우 상태 동기화
+    useEffect(() => {
+        if (initialPurposes && initialPurposes.length > 0) {
+            setPurposeOptions(initialPurposes);
+            setPurposesLoaded(true);
+        }
+    }, [initialPurposes]);
+    
     // Daum Postcode API 스크립트 동적 로드
     useEffect(() => {
         // 이미 스크립트가 로드되었는지 확인
@@ -180,6 +195,49 @@ export default function VillageInfoCreate() {
         }
     };
 
+    // 설립목적 데이터를 렌더링하는 함수
+
+    // 설립목적 공통코드(BC0001) DB 조회
+    const fetchEstablishmentPurposes = async () => {
+        if (purposesLoaded || isPurposeLoading) return;
+        setIsPurposeLoading(true);
+        try {
+            const response = await fetch('/village/purposes/');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            const rows = Array.isArray(data) ? data : [];
+            const mapped = rows.map((item) => ({
+                code: item.code ?? item.dtl_cd,
+                name: item.name ?? item.dtl_nm,
+            }));
+            setPurposeOptions(mapped);
+            setPurposesLoaded(true);
+        } catch (error) {
+            console.error('[설립목적] 공통코드 조회 실패:', error);
+            setPurposeOptions([]);
+        } finally {
+            setIsPurposeLoading(false);
+        }
+    };
+    const handlePurposeSelectClick = () => {
+        fetchEstablishmentPurposes();
+    };
+
+    
+    const renderPurposeOptions = () => {
+        if (isPurposeLoading) {
+            return <option value="" disabled>불러오는 중...</option>;
+        }
+        if (!purposeOptions || purposeOptions.length === 0) {
+            return null;
+        }
+        return purposeOptions.map((purpose) => (
+            <option key={purpose.code} value={purpose.code}>
+                {purpose.name}
+            </option>
+        ));
+    };
+
     return (
         <MainLayout>
             {/* 상단 헤더 섹션 (처음부터 블루 네온 적용된 버전) */}
@@ -333,7 +391,9 @@ export default function VillageInfoCreate() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">연령</label>
                                     <input type="text" 
-                                           className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" value={ageRep} readOnly
+                                           className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
+                                           placeholder="생년월일 입력 시 자동 적용 됩니다."
+                                           readOnly
                                            placeholder="생년월일 입력 시 자동 적용 됩니다."
                                            readOnly
                                            value={ageRep}
@@ -408,7 +468,7 @@ export default function VillageInfoCreate() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">연령</label>
                                     <input type="text" 
-                                           className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" value={ageRep} readOnly
+                                           className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                            placeholder="생년월일 입력 시 자동 적용 됩니다."
                                            readOnly
                                            value={ageWorker}
@@ -446,14 +506,19 @@ export default function VillageInfoCreate() {
 
                             {/* 상단 4분할 그리드 (선택 박스 적용) */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                                {/* 1. 설립목적 선택 박스 */}
+                                {/* 1. 설립목적 선택 박스 (동적 바인딩 적용 완료) */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">설립목적</label>
-                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer">
-                                        <option value="선택">선택</option>
-                                        <option value="일자리창출">일자리창출</option>
-                                        <option value="주민화합">주민화합</option>
-                                        <option value="주민소득창출">주민소득창출</option>
+                                    <select 
+                                        value={selectedPurpose}
+                                        onChange={(e) => setSelectedPurpose(e.target.value)}
+                                        onFocus={handlePurposeSelectClick}
+                                        onMouseDown={handlePurposeSelectClick}
+                                        disabled={isPurposeLoading}
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
+                                    >
+                                        <option value="선택">{isPurposeLoading ? '불러오는 중...' : '선택'}</option>
+                                        {renderPurposeOptions()}
                                     </select>
                                 </div>
 
@@ -828,3 +893,15 @@ export default function VillageInfoCreate() {
         </MainLayout >
     );
 }
+// // 설립목적 데이터를 렌더링하는 함수
+// const renderPurposeOptions = () => {
+//     if (!purposes || purposes.length === 0) {
+//         return <option value="">데이터 없음2</option>;
+//     }
+//     return purposes.map((purpose) => (
+//         <option key={purpose.code} value={purpose.code}>
+//             {purpose.name}
+//         </option>
+//     ));
+// };
+
