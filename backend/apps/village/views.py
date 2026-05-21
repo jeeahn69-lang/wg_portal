@@ -18,9 +18,20 @@ def village_card(request):
     # 'village/VillageInfoCreate'는 Pages/village/VillageCard.jsx 파일을 의미합니다.
     return inertia_render(request, 'village/VillageInfoCreate')
 
-def village_info(request):
+def village_info_list(request):
     # 'village/VillageInfoCreate'는 Pages/village/VillageInfoCreate.jsx 파일을 의미합니다.
     # return inertia_render(request, 'village/VillageInfoCreate')
+    """마을 공동체 현황 목록 화면 렌더링 (검색용 콤보박스 데이터 포함)"""
+    
+    # 만들어둔 (_fetch_comcode_by_master) 함수를 사용하여 읍면(BC0001)과 설립유형(BC0003) 코드를 가져옵니다.
+    regions = _fetch_comcode_by_master('SC0001')
+    comptypes = _fetch_comcode_by_master('BC0003')
+
+    return inertia_render(request, 'village/VillageInfoList', {
+        'regions': regions,
+        'comptypes': comptypes,
+    })
+
     return inertia_render(request, 'village/VillageInfoList')
 
 def village_sales(request):
@@ -44,7 +55,7 @@ def _fetch_comcode_by_master(master_cd):
         SELECT dtl_cd, dtl_nm
         FROM sys_comcode_dtl
         WHERE master_cd = %s AND use_yn = 'Y'
-        ORDER BY dtl_cd ASC
+        ORDER BY dtl_nm ASC
     """
     with connection.cursor() as cursor:
         cursor.execute(query, [master_cd])

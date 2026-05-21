@@ -3,10 +3,10 @@ import MainLayout from "../../layouts/MainLayout";
 import { useTabs } from '../../context/TabContext';
 import { Wallet } from 'lucide-react';
 
-export default function VillageInfoList() {
+export default function VillageInfoList({ regions = [], comptypes = [] }) {
     const { addTab } = useTabs();
     // 샘플 데이터 (image_2de23d.png 기반)
-    const salesData = [
+    const initialSalesData = [
         { id: 1, eubmyeon: '삼례읍', village: '정산마을', corporation: '(유)정산식품', ceo: '최성기', type: '마을화합형', cotype: '영농조합법인', worker: '김철수', product: '장류 (된장 등)', villhead: '김이장', revenue: '125,000' },
         { id: 2, eubmyeon: '삼례읍', village: '학동마을', corporation: '학동마을 영농조합', ceo: '박민경', type: '소득창출형', cotype: '영농조합법인', worker: '김철수', product: '참기름, 김부각', villhead: '최이장', revenue: '95,000' },
         { id: 3, eubmyeon: '삼례읍', village: '후와마을', corporation: '완주딸기랜드', ceo: '이문택', type: '소득창출형', cotype: '영농조합법인', worker: '김철수', product: '딸기잼, 냉동딸기', villhead: '박이장', revenue: '85,000' },
@@ -15,6 +15,20 @@ export default function VillageInfoList() {
         { id: 6, eubmyeon: '봉동읍', village: '제촌마을', corporation: '제촌마을회', ceo: '송호석', type: '마을화합형', cotype: '영농조합법인', worker: '김철수', product: '진천송씨 연잎국수', villhead: '남이장', revenue: '90,000' },
         { id: 7, eubmyeon: '구이면', village: '안덕마을', corporation: '안덕파워', ceo: '입옥섭', type: '소득창출형', cotype: '영농조합법인', worker: '김철수', product: '체험, 숙박', villhead: '한이장', revenue: '75,000' },
     ];
+
+    // 검색 조건을 관리할 상태(State) 설정
+    const [selectedRegion, setSelectedRegion] = useState('전체');
+    const [selectedType, setSelectedType] = useState('전체');
+    const [searchVillage, setSearchVillage] = useState('');
+
+    // 실시간 필터링 로직 (마을명 첫 글자만 쳐도 바로 필터링 됨)
+    const filteredData = initialSalesData.filter(item => {
+        const matchRegion = selectedRegion === '전체' || item.eubmyeon === selectedRegion;
+        const matchType = selectedType === '전체' || item.type === selectedType;
+        const matchVillage = item.village.includes(searchVillage); // 글자가 포함되면 모두 조회
+        
+        return matchRegion && matchType && matchVillage;
+    });
 
     return (
         <MainLayout>
@@ -36,28 +50,54 @@ export default function VillageInfoList() {
             {/* 2. 조회 조건 (Filter Section) */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    {/* 읍·면 선택 (BC0001 바인딩) */}
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-gray-400 ml-1 uppercase">읍·면 선택</label>
-                        <select className="w-full p-4 bg-gray-100 border-none rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-100 transition-all appearance-none">
-                            <option>전체</option>
-                            <option>삼례읍</option>
-                            <option>봉동읍</option>
+                        <select 
+                            value={selectedRegion}
+                            onChange={(e) => setSelectedRegion(e.target.value)}
+                            className="w-full p-4 bg-gray-100 border-none rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-100 transition-all appearance-none cursor-pointer"
+                        >
+                            <option value="전체">전체</option>
+                            {regions.map((region) => (
+                                <option key={region.code} value={region.name}>{region.name}</option>
+                            ))}
                         </select>
                     </div>
+                    {/* 마을명 실시간 검색 */}
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-gray-400 ml-1 uppercase">마을명</label>
-                        <input type="text" placeholder="마을 이름을 입력하세요" className="w-full p-4 bg-gray-100 border-none rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-100" />
+                        <input type="text" 
+                               value={searchVillage}
+                               onChange={(e) => setSearchVillage(e.target.value)}
+                               placeholder="마을 이름을 입력하세요" 
+                               className="w-full p-4 bg-gray-100 border-none rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-100"
+                        />
                     </div>
+                    {/* 법인유형 선택 (BC0004 바인딩) */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-400 ml-1 uppercase">설립유형</label>
-                        <select className="w-full p-4 bg-gray-100 border-none rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-100 transition-all appearance-none">
-                            <option>전체</option>
-                            <option>마을화합형</option>
-                            <option>소득창출형</option>
+                        <label className="text-sm font-bold text-gray-400 ml-1 uppercase">법인유형</label>
+                        <select 
+                            value={selectedType}
+                            onChange={(e) => setSelectedType(e.target.value)}
+                            className="w-full p-4 bg-gray-100 border-none rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-100 transition-all appearance-none cursor-pointer"
+                        >
+                            <option value="전체">전체</option>
+                            {comptypes.map((type) => (
+                                <option key={type.code} value={type.name}>{type.name}</option>
+                            ))}
                         </select>
                     </div>
+                    {/* 조회버튼 기능은 이제 '초기화' 느낌으로 쓰거나, 백엔드 API 연동 시 사용할 수 있습니다. */}
                     <div className="flex items-end justify-end">
-                        <button className="w-1/2 h-[52px] bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
+                        {/* <button className="w-1/2 h-[52px] bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all"> */}
+                        <button 
+                            onClick={() => {
+                                // 추가적인 비동기 API 조회가 필요할 때 여기에 로직 추가
+                                console.log("조회된 데이터 수:", filteredData.length);
+                            }}
+                            className="w-1/2 h-[52px] bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all"
+                        >
                             조회하기
                         </button>
                     </div>
@@ -66,8 +106,9 @@ export default function VillageInfoList() {
 
             {/* 3. 리스트 영역 (List Section) */}
             <div className="bg-white rounded-lg border border-blue-100 shadow-xl p-8 overflow-hidden">
-                <div className="pb-8 border-b border-gray-100p flex justify-between items-center bg-white/50">
-                    <span className="text-sm font-bold text-gray-400">검색 결과 <span className="text-blue-600">{salesData.length}</span> 건</span>
+                <div className="pb-8 border-b border-gray-100 flex justify-between items-center bg-white/50">
+                    {/* 필터링된 데이터의 갯수를 표시합니다 */}
+                    <span className="text-sm font-bold text-gray-400">검색 결과 <span className="text-blue-600">{filteredData.length}</span> 건</span>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -87,29 +128,38 @@ export default function VillageInfoList() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {salesData.map((item, idx) => (
-                                <tr key={item.id} className="hover:bg-blue-50/30 transition-colors group cursor-pointer" onClick={() => addTab({ id: `village-info-${item.id}`, title: `${item.village} 정보`, path: '/village/card/', villageName: item.village })}>
-                                    <td className="px-8 py-6 text-center font-mono text-gray-400 text-sm font-bold">{idx + 1}</td>
-                                    <td className="px-8 py-6">
-                                        <span className="inline-flex items-center rounded-lg bg-blue-50 px-3 py-1 text-sm font-bold text-blue-600">{item.eubmyeon}</span>
-                                    </td>
-                                    <td className="px-8 py-6">
-                                        <span className="text-gray-950 font-bold group-hover:text-blue-600 transition-colors text-sm">{item.village}</span>
-                                        <div className="text-xs text-gray-400 mt-0.5">{item.type}</div>
-                                    </td>
-                                    <td className="px-8 py-6 text-sm text-gray-600 font-semibold">{item.corporation}</td>
-                                    <td className="px-8 py-6 text-sm text-gray-600 font-medium">{item.cotype}</td>
-                                    <td className="px-8 py-6 text-sm text-gray-600 font-medium">{item.ceo}</td>
-                                    <td className="px-8 py-6 text-sm text-gray-600 font-medium">{item.worker}</td>
-                                    <td className="px-8 py-6 text-sm text-gray-600 font-medium">{item.villhead}</td>
-                                    <td className="px-8 py-6">
-                                        <span className="inline-flex px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm font-bold">{item.product}</span>
-                                    </td>
-                                    <td className="px-8 py-6 text-right">
-                                        <span className="text-blue-600 font-black font-mono text-xm">{item.revenue}</span>
+                            {/* map을 돌릴 때 salesData 대신 filteredData를 사용합니다 */}
+                            {filteredData.length > 0 ? (
+                                filteredData.map((item, idx) => (
+                                    <tr key={item.id} className="hover:bg-blue-300/20 transition-colors group cursor-pointer" onClick={() => addTab({ id: `village-info-${item.id}`, title: `${item.village} 정보`, path: '/village/card/', villageName: item.village })}>
+                                        <td className="px-8 py-4 text-center font-mono text-gray-400 text-sm font-bold">{idx + 1}</td>
+                                        <td className="px-8 py-4">
+                                            <span className="inline-flex items-center rounded-lg bg-blue-50 px-3 py-1 text-sm font-bold text-blue-600">{item.eubmyeon}</span>
+                                        </td>
+                                        <td className="px-8 py-4">
+                                            <span className="text-gray-950 font-bold group-hover:text-blue-600 transition-colors text-sm">{item.village}</span>
+                                            <div className="text-xs text-gray-400 mt-0.5">{item.type}</div>
+                                        </td>
+                                        <td className="px-8 py-4 text-sm text-gray-600 font-semibold">{item.corporation}</td>
+                                        <td className="px-8 py-4 text-sm text-gray-600 font-medium">{item.cotype}</td>
+                                        <td className="px-8 py-4 text-sm text-gray-600 font-medium">{item.ceo}</td>
+                                        <td className="px-8 py-4 text-sm text-gray-600 font-medium">{item.worker}</td>
+                                        <td className="px-8 py-4 text-sm text-gray-600 font-medium">{item.villhead}</td>
+                                        <td className="px-8 py-4">
+                                            <span className="inline-flex px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm font-bold">{item.product}</span>
+                                        </td>
+                                        <td className="px-8 py-4 text-right">
+                                            <span className="text-blue-600 font-black font-mono text-xm">{item.revenue}</span>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="10" className="px-8 py-12 text-center text-gray-400 font-bold">
+                                        검색 조건에 맞는 데이터가 없습니다.
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>

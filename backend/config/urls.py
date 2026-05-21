@@ -41,9 +41,11 @@ urlpatterns = [
     # /accounts/login/, /accounts/login/action/, /accounts/logout/ 등
     # ============================================================
     path('accounts/', include('apps.accounts.urls')),
+
     # 마을 관리 URL (/village/...)
     # ============================================================
     path('village/', include('apps.village.urls')),
+    
     # 시스템 관리 URL (/system/...)
     # ============================================================
     path('system/', include('apps.system.urls')),
