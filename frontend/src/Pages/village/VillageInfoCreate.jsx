@@ -18,7 +18,7 @@ export default function VillageInfoCreate({
     // 설립목적(BC0001) 콤보박스 상태
     const [selectedPurpose, setSelectedPurpose] = useState('선택');
     const [purposeOptions, setPurposeOptions] = useState(initialPurposes);
-    const [isPurposeLoading, setIsPurposeLoading] = useState(false);
+    const [isPurposeLoading, onChange] = useState(false);
     const [purposesLoaded, setPurposesLoaded] = useState(initialPurposes.length > 0);
     // 설립유형(BC0002) 콤보박스 상태
     const [selectedEstablishmentType, setSelectedEstablishmentType] = useState('선택');
@@ -51,11 +51,16 @@ export default function VillageInfoCreate({
     const [phoneWorker, setPhoneWorker] = useState('');  // 실무자 연락처
     const [establishmentDate, setEstablishmentDate] = useState(''); // 설립시기
     const [establishmentDateError, setEstablishmentDateError] = useState(""); // 설립시기 에러 메시지 상태
+    const [memberOutDate, setMemberOutDate] = useState(''); // 탈퇴일자
+    const [memberOutDateError, setMemberOutDateError] = useState(""); // 탈퇴일자 에러 메시지 상태
     const [households, setHouseholds] = useState('45'); // 세대수
     const [population, setPopulation] = useState('112'); // 주민수
     const [businessAddress, setBusinessAddress] = useState(''); // 사업장 주소
     const [isScriptLoaded, setIsScriptLoaded] = useState(false); // Daum 스크립트 로드 상태
     const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 검색 팝업 열림 상태
+
+    // 기본값을 'N' 또는 '아니오'로 설정합니다. 여기서는 '아니오'로 지정하겠습니다.
+    const [isYn, setIsYn] = useState('아니오');
 
     // Inertia 초기 props 동기화
     // 설립목적(BC0001) 콤보박스 상태 동기화
@@ -168,7 +173,7 @@ export default function VillageInfoCreate({
     const ageRep = birthDateErrorRep ? '' : calculateAge(birthDateRep);
     const ageWorker = birthDateErrorWorker ? '' : calculateAge(birthDateWorker);
 
-    // 생년월일 포맷팅 함수
+    // 8자리 숫자를 0000-00-00 형식으로 변환 포맷팅 함수
     const formatBirthDate = (value) => {
         const clean = value.replace(/\D/g, '');
         if (clean.length === 8) {
@@ -407,6 +412,16 @@ export default function VillageInfoCreate({
                                     />
                                 </div>
                                 <div className="space-y-2">
+                                    <label className="text-sm font-bold text-gray-500 ml-1">공동체 법인명</label>
+                                    <input
+                                        type="text"
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
+                                        placeholder="공동체 법인 (마을회사)명을 입력하세요"
+                                        // defaultValue="밤티 마을"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">사업장 주소</label>
                                     <div className="relative">
                                         <input
@@ -421,15 +436,6 @@ export default function VillageInfoCreate({
                                             placeholder="더블 클릭 시 주소 검색창이 열립니다."
                                         />
                                     </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-500 ml-1">공동체 법인명</label>
-                                    <input
-                                        type="text"
-                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
-                                        placeholder="공동체 법인 (마을회사)명을 입력하세요"
-                                        // defaultValue="밤티 마을"
-                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">세대수</label>
@@ -726,14 +732,20 @@ export default function VillageInfoCreate({
 
                         {/* 섹션 4: 기타 정보 */}
                         <section className="p-8 bg-white rounded-lg border border-gray-200 shadow-sm">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                                {/* 완주마을공동체 협의회 회원 여부 섹션 */}
+
+                                {/* <div className="space-y-2">
+                                    <label className="text-sm font-bold text-gray-500 ml-1">성명</label>
+                                    <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
+                                </div> */}
                                 {/* 홈페이지 정보 섹션 */}
                                 <div className="space-y-3">
                                     <label className="text-sm font-bold text-gray-500 ml-1">홈페이지(SNS) 유무</label>
                                     <div className="flex flex-col sm:flex-row gap-4">
                                         {/* 선택 박스 (기본값: 없음) */}
                                         <select
-                                            className="w-full sm:w-32 p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer"
+                                            className="w-full sm:w-40 p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer"
                                             defaultValue="없음"
                                             onChange={(e) => {
                                                 const inputWrapper = document.getElementById('homepage-input-wrapper');
@@ -769,9 +781,59 @@ export default function VillageInfoCreate({
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-500 ml-1">공적자금 지원현황</label>
-                                    <div className="p-4 bg-gray-300/40 rounded-lg border border-transparent font-bold text-gray-900 text-sm">
-                                        별도 탭(지원사업)에서 상세 내역 확인 가능
+                                    <label className="text-sm font-bold text-gray-500 ml-1">마을공동체 협의회 회원 여부</label>
+                                    {/* flex, justify-center, items-center를 추가하여 내부 라디오 버튼들을 가로로 나열하고 정중앙 정렬합니다. */}
+                                    <div className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md flex justify-center items-center gap-10">
+                                        
+                                        {/* '아니오' 라디오 버튼 */}
+                                        <label className="flex items-center gap-2 cursor-pointer text-md font-semibold text-gray-950">
+                                            <input
+                                                type="radio"
+                                                name="statusYn"
+                                                value="아니오"
+                                                checked={isYn === '아니오'}
+                                                onChange={(e) => setIsYn(e.target.value)}
+                                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                                            />
+                                            <span>아니오</span>
+                                        </label>
+
+                                        {/* '예' 라디오 버튼 (이제 아니오 오른쪽에 정렬됩니다) */}
+                                        <label className="flex items-center gap-2 cursor-pointer text-md font-semibold text-gray-950">
+                                            <input
+                                                type="radio"
+                                                name="statusYn"
+                                                value="예"
+                                                checked={isYn === '예'}
+                                                onChange={(e) => setIsYn(e.target.value)}
+                                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                                            />
+                                            <span>예</span>
+                                        </label>
+                                        
+                                    </div>
+                                </div>
+
+                                {/* 4.3 탈퇴일자 입력 (년-월-일 형식) */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-gray-500 ml-1">탈퇴일자</label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
+                                                      ${memberOutDateError ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
+                                            value={formatBirthDate(memberOutDate)}
+                                            onChange={(e) => handleBirthDateChange(e, setMemberOutDate, setMemberOutDateError)}
+                                            onBlur={() => setMemberOutDateError("")}
+                                            placeholder="yyyy-mm-dd"
+                                            maxLength="10"
+                                        />
+                                        {/* 에러 메시지 표시 구문 추가 */}
+                                        {memberOutDateError && (
+                                            <p className="mt-2 ml-2 text-red-500 text-sm font-semibold">
+                                                {memberOutDateError}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>

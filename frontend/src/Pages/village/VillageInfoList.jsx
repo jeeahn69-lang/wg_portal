@@ -50,7 +50,7 @@ export default function VillageInfoList({ regions = [], comptypes = [] }) {
             {/* 2. 조회 조건 (Filter Section) */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    {/* 읍·면 선택 (BC0001 바인딩) */}
+                    {/* 읍·면 선택 (SC0001 바인딩) */}
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-gray-400 ml-1 uppercase">읍·면 선택</label>
                         <select 
