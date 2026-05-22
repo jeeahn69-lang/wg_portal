@@ -381,7 +381,7 @@ export default function VillageInfoCreate({
                         onClick={() => setActiveTab(tab)}
                         className={`px-8 py-3 rounded-xl text-lg font-bold transition-all ${activeTab === tab
                             ? 'bg-white text-blue-600 shadow-sm'
-                            : 'text-gray-400 hover:text-gray-600'
+                            : 'text-gray-500 hover:text-gray-600'
                             }`}
                     >
                         {tab}
@@ -816,7 +816,7 @@ export default function VillageInfoCreate({
 
                                 {/* 4.3 탈퇴일자 입력 (년-월-일 형식) */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-500 ml-1">탈퇴일자</label>
+                                    <label className="text-sm font-bold text-gray-500 ml-1">회원 탈퇴일자</label>
                                     <div className="relative">
                                         <input
                                             type="text"

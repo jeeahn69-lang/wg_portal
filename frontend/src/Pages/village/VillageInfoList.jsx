@@ -7,13 +7,13 @@ export default function VillageInfoList({ regions = [], comptypes = [] }) {
     const { addTab } = useTabs();
     // 샘플 데이터 (image_2de23d.png 기반)
     const initialSalesData = [
-        { id: 1, eubmyeon: '삼례읍', village: '정산마을', corporation: '(유)정산식품', ceo: '최성기', type: '마을화합형', cotype: '영농조합법인', worker: '김철수', product: '장류 (된장 등)', villhead: '김이장', revenue: '125,000' },
-        { id: 2, eubmyeon: '삼례읍', village: '학동마을', corporation: '학동마을 영농조합', ceo: '박민경', type: '소득창출형', cotype: '영농조합법인', worker: '김철수', product: '참기름, 김부각', villhead: '최이장', revenue: '95,000' },
-        { id: 3, eubmyeon: '삼례읍', village: '후와마을', corporation: '완주딸기랜드', ceo: '이문택', type: '소득창출형', cotype: '영농조합법인', worker: '김철수', product: '딸기잼, 냉동딸기', villhead: '박이장', revenue: '85,000' },
-        { id: 4, eubmyeon: '봉동읍', village: '제촌마을', corporation: '제촌마을회', ceo: '송호석', type: '마을화합형', cotype: '영농조합법인', worker: '김철수', product: '진천송씨 연잎국수', villhead: '이이장', revenue: '110,000' },
-        { id: 5, eubmyeon: '봉동읍', village: '제촌마을', corporation: '제촌마을회', ceo: '송호석', type: '마을화합형', cotype: '영농조합법인', worker: '김철수', product: '진천송씨 연잎국수', villhead: '조이장', revenue: '100,000' },
-        { id: 6, eubmyeon: '봉동읍', village: '제촌마을', corporation: '제촌마을회', ceo: '송호석', type: '마을화합형', cotype: '영농조합법인', worker: '김철수', product: '진천송씨 연잎국수', villhead: '남이장', revenue: '90,000' },
-        { id: 7, eubmyeon: '구이면', village: '안덕마을', corporation: '안덕파워', ceo: '입옥섭', type: '소득창출형', cotype: '영농조합법인', worker: '김철수', product: '체험, 숙박', villhead: '한이장', revenue: '75,000' },
+        { id: 1, eubmyeon: '삼례읍', village: '정산마을', corporation: '(유)정산식품', memberyn: '회원', ceo: '최성기', type: '마을화합형', cotype: '영농조합법인', worker: '김철수', product: '장류 (된장 등)', villhead: '김이장', revenue: '125,000' },
+        { id: 2, eubmyeon: '삼례읍', village: '학동마을', corporation: '학동마을 영농조합', memberyn: '비회원', ceo: '박민경', type: '소득창출형', cotype: '영농조합법인', worker: '김철수', product: '참기름, 김부각', villhead: '최이장', revenue: '95,000' },
+        { id: 3, eubmyeon: '삼례읍', village: '후와마을', corporation: '완주딸기랜드', memberyn: '회원', ceo: '이문택', type: '소득창출형', cotype: '영농조합법인', worker: '김철수', product: '딸기잼, 냉동딸기', villhead: '박이장', revenue: '85,000' },
+        { id: 4, eubmyeon: '봉동읍', village: '제촌마을', corporation: '제촌마을회', memberyn: '회원', ceo: '송호석', type: '마을화합형', cotype: '영농조합법인', worker: '김철수', product: '진천송씨 연잎국수', villhead: '이이장', revenue: '110,000' },
+        { id: 5, eubmyeon: '봉동읍', village: '제촌마을', corporation: '제촌마을회', memberyn: '회원', ceo: '송호석', type: '마을화합형', cotype: '영농조합법인', worker: '김철수', product: '진천송씨 연잎국수', villhead: '조이장', revenue: '100,000' },
+        { id: 6, eubmyeon: '봉동읍', village: '제촌마을', corporation: '제촌마을회', memberyn: '비회원', ceo: '송호석', type: '마을화합형', cotype: '영농조합법인', worker: '김철수', product: '진천송씨 연잎국수', villhead: '남이장', revenue: '90,000' },
+        { id: 7, eubmyeon: '구이면', village: '안덕마을', corporation: '안덕파워', memberyn: '회원', ceo: '입옥섭', type: '소득창출형', cotype: '영농조합법인', worker: '김철수', product: '체험, 숙박', villhead: '한이장', revenue: '75,000' },
     ];
 
     // 검색 조건을 관리할 상태(State) 설정
@@ -52,7 +52,7 @@ export default function VillageInfoList({ regions = [], comptypes = [] }) {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* 읍·면 선택 (SC0001 바인딩) */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-400 ml-1 uppercase">읍·면 선택</label>
+                        <label className="text-sm font-bold text-gray-500 ml-1 uppercase">읍·면 선택</label>
                         <select 
                             value={selectedRegion}
                             onChange={(e) => setSelectedRegion(e.target.value)}
@@ -66,7 +66,7 @@ export default function VillageInfoList({ regions = [], comptypes = [] }) {
                     </div>
                     {/* 마을명 실시간 검색 */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-400 ml-1 uppercase">마을명</label>
+                        <label className="text-sm font-bold text-gray-500 ml-1 uppercase">마을명</label>
                         <input type="text" 
                                value={searchVillage}
                                onChange={(e) => setSearchVillage(e.target.value)}
@@ -74,8 +74,18 @@ export default function VillageInfoList({ regions = [], comptypes = [] }) {
                                className="w-full p-4 bg-gray-100 border-none rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-100"
                         />
                     </div>
-                    {/* 법인유형 선택 (BC0004 바인딩) */}
-                    <div className="space-y-2">
+                    {/* 공동체 협의회 회원 여부 선택 */}
+                    
+                     <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-500 ml-1">공동체 협의회 회원</label>
+                        <select className="w-full p-4 bg-gray-100 border-none rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-100 transition-all appearance-none cursor-pointer">
+                            <option value="전체">전체</option>
+                            <option value="Y">회원</option>
+                            <option value="N">비회원</option>
+                        </select>
+                    </div>
+
+                    {/* <div className="space-y-2">
                         <label className="text-sm font-bold text-gray-400 ml-1 uppercase">법인유형</label>
                         <select 
                             value={selectedType}
@@ -87,7 +97,7 @@ export default function VillageInfoList({ regions = [], comptypes = [] }) {
                                 <option key={type.code} value={type.name}>{type.name}</option>
                             ))}
                         </select>
-                    </div>
+                    </div> */}
                     {/* 조회버튼 기능은 이제 '초기화' 느낌으로 쓰거나, 백엔드 API 연동 시 사용할 수 있습니다. */}
                     <div className="flex items-end justify-end">
                         {/* <button className="w-1/2 h-[52px] bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all"> */}
@@ -120,6 +130,7 @@ export default function VillageInfoList({ regions = [], comptypes = [] }) {
                                 <th className="px-8 py-5 text-sm font-bold text-gray-400 tracking-widest">마을명</th>
                                 <th className="px-8 py-5 text-sm font-bold text-gray-400 tracking-widest">공동체법인명</th>
                                 <th className="px-8 py-5 text-sm font-bold text-gray-400 tracking-widest">법인유형</th>
+                                <th className="px-8 py-5 text-sm font-bold text-gray-400 tracking-widest">회원여부</th>
                                 <th className="px-8 py-5 text-sm font-bold text-gray-400 tracking-widest">대표자</th>
                                 <th className="px-8 py-5 text-sm font-bold text-gray-400 tracking-widest">실무자</th>
                                 <th className="px-8 py-5 text-sm font-bold text-gray-400 tracking-widest">마을이장</th>
@@ -142,6 +153,7 @@ export default function VillageInfoList({ regions = [], comptypes = [] }) {
                                         </td>
                                         <td className="px-8 py-4 text-sm text-gray-600 font-semibold">{item.corporation}</td>
                                         <td className="px-8 py-4 text-sm text-gray-600 font-medium">{item.cotype}</td>
+                                        <td className="px-8 py-4 text-sm text-gray-600 font-medium">{item.memberyn}</td>
                                         <td className="px-8 py-4 text-sm text-gray-600 font-medium">{item.ceo}</td>
                                         <td className="px-8 py-4 text-sm text-gray-600 font-medium">{item.worker}</td>
                                         <td className="px-8 py-4 text-sm text-gray-600 font-medium">{item.villhead}</td>
