@@ -120,7 +120,7 @@ def village_info_search_api(request):
                 vcd.comp_corp_nm        AS corporation,
                 public.fn_get_comcode_nm('BC0002', vcd.inst_type_cd) AS type,   
                 public.fn_get_comcode_nm('BC0003', vcd.corp_type_cd) AS cotype, 
-                vcd.council_mbr_yn      AS council_member,
+                vcd.council_mbr_yn      AS council_mbr_yn,
                 vmb.head_nm             AS villhead,
                 vcd.main_prod_cn        AS product,
                 vcd.main_act_cn         AS activity,
