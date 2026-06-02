@@ -1,164 +1,218 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import MainLayout from "../../layouts/MainLayout";
 import { useTabs } from '../../context/TabContext';
 
 export default function VillageInfoCreate({
-    purposes: initialPurposes = [],
-    establishmentTypes: initialEstablishmentTypes = [],
-    corporationTypes: initialCorporationTypes = [],
-    repactivityTypes: initialRepactivityTypes = [],
-    workactivityTypes: initialWorkactivityTypes = [],
+    vilMngNo: propsVilMngNo = null, // 마을 리스트에서 행 클릭 시 전달받을 마을 관리 번호
+    // purposes: initialPurposes = [],
+    // establishmentTypes: initialEstablishmentTypes = [],
+    // corporationTypes: initialCorporationTypes = [],
+    // repactivityTypes: initialRepactivityTypes = [],
+    // workactivityTypes: initialWorkactivityTypes = [],
 }) {
     const { openTabs, activeTabId } = useTabs();
     const currentTab = openTabs.find(tab => tab.id === activeTabId);
-    const villageName = currentTab?.villageName || '밤티마을';
+    // 2026.05.27 Props로 직접 넘어왔거나, 탭 객체(currentTab) 내부에 숨어있는 번호를 하나로 완벽하게 병합합니다.
+    const vilMngNo = propsVilMngNo || currentTab?.vilMngNo || null;
+    
+    // 상태 제어를 위해 기존 고정값을 빈 문자열 상태로 전환
+    const [villageName, setVillageName] = useState('');
+    const [corpName, setCorpName] = useState(''); // 공동체 법인명
+    const [leaderName, setLeaderName] = useState(''); // 이장명
+
     const [activeTab, setActiveTab] = useState('기본정보');
     const tabs = ['기본정보', '지원사업', '매출/일자리', '시설/장비', '사업장 전경', '현장점검'];
 
     // 설립목적(BC0001) 콤보박스 상태
-    const [selectedPurpose, setSelectedPurpose] = useState('선택');
-    const [purposeOptions, setPurposeOptions] = useState(initialPurposes);
-    const [isPurposeLoading, onChange] = useState(false);
-    const [purposesLoaded, setPurposesLoaded] = useState(initialPurposes.length > 0);
+    const [selectedPurpose, setSelectedPurpose] = useState('');
+    const [purposeOptions, setPurposeOptions] = useState([]);
+    
     // 설립유형(BC0002) 콤보박스 상태
-    const [selectedEstablishmentType, setSelectedEstablishmentType] = useState('선택');
-    const [establishmentTypeOptions, setEstablishmentTypeOptions] = useState(initialEstablishmentTypes);
-    const [isEstablishmentTypeLoading, setIsEstablishmentTypeLoading] = useState(false);
-    const [establishmentTypesLoaded, setEstablishmentTypesLoaded] = useState(initialEstablishmentTypes.length > 0);
+    const [selectedEstablishmentType, setSelectedEstablishmentType] = useState('');
+    const [establishmentTypeOptions, setEstablishmentTypeOptions] = useState([]);
+    
     // 법인유형(BC0003) 콤보박스 상태
-    const [selectedCorporationType, setSelectedCorporationType] = useState('선택');
-    const [corporationTypeOptions, setCorporationTypeOptions] = useState(initialCorporationTypes);
-    const [isCorporationTypeLoading, setIsCorporationTypeLoading] = useState(false);
-    const [corporationTypesLoaded, setCorporationTypesLoaded] = useState(initialCorporationTypes.length > 0);
+    const [selectedCorporationType, setSelectedCorporationType] = useState('');
+    const [corporationTypeOptions, setCorporationTypeOptions] = useState([]);
+    
     // 대표자 활동유형(BC0004) 콤보박스 상태
-    const [selectedRepactivityType, setSelectedRepactivityType] = useState('선택');
-    const [repactivityTypeOptions, setRepactivityTypeOptions] = useState(initialRepactivityTypes);
-    const [isRepactivityTypeLoading, setIsRepactivityTypeLoading] = useState(false);
-    const [repactivityTypesLoaded, setRepactivityTypesLoaded] = useState(initialRepactivityTypes.length > 0);
-    // 실무자 활동유형(BC0004) 콤보박스 상태
-    const [selectedWorkactivityType, setSelectedWorkactivityType] = useState('선택');
-    const [workactivityTypeOptions, setWorkactivityTypeOptions] = useState(initialWorkactivityTypes);
-    const [isWorkactivityTypeLoading, setIsWorkactivityTypeLoading] = useState(false);
-    const [workactivityTypesLoaded, setWorkactivityTypesLoaded] = useState(initialWorkactivityTypes.length > 0);
+    const [selectedRepactivityType, setSelectedRepactivityType] = useState('');
+    const [repactivityTypeOptions, setRepactivityTypeOptions] = useState([]);
+    
+    // 실무자 활동유형(BC0005) 콤보박스 상태
+    const [selectedWorkactivityType, setSelectedWorkactivityType] = useState('');
+    const [workactivityTypeOptions, setWorkactivityTypeOptions] = useState([]);
 
-
-    // 생년월일 상태 관리
-    const [birthDateRep, setBirthDateRep] = useState(''); // 대표자
-    const [birthDateWorker, setBirthDateWorker] = useState(''); // 실무자
-    const [birthDateErrorRep, setBirthDateErrorRep] = useState(""); // 대표자 생년월일 에러 메시지 상태
-    const [birthDateErrorWorker, setBirthDateErrorWorker] = useState(""); // 실무자 생년월일 에러 메시지 상태
+    // 대표자 정보 세부 상태 관리
+    const [ownerName, setOwnerName] = useState(''); // 대표자 성명
     const [phoneRep, setPhoneRep] = useState('');  // 대표자 연락처
+    const [birthDateRep, setBirthDateRep] = useState(''); // 대표자 생년월일
+    const [birthDateErrorRep, setBirthDateErrorRep] = useState(""); // 대표자 생년월일 에러
+    const [ownerGender, setOwnerGender] = useState('남성'); // 대표자 성별
+    const [emailRep, setEmailRep] = useState(''); // 대표자 이메일 상태 추가
+
+    // 실무자 정보 세부 상태 관리
+    const [workerName, setWorkerName] = useState(''); // 실무자 성명
     const [phoneWorker, setPhoneWorker] = useState('');  // 실무자 연락처
+    const [birthDateWorker, setBirthDateWorker] = useState(''); // 실무자 생년월일
+    const [birthDateErrorWorker, setBirthDateErrorWorker] = useState(""); // 실무자 생년월일 에러
+    const [workerGender, setWorkerGender] = useState('여성'); // 실무자 성별
+    const [emailWorker, setEmailWorker] = useState(''); // 실무자 이메일 상태 추가
+
+    // 설립 및 기타 운영 상태 관리
     const [establishmentDate, setEstablishmentDate] = useState(''); // 설립시기
-    const [establishmentDateError, setEstablishmentDateError] = useState(""); // 설립시기 에러 메시지 상태
+    const [establishmentDateError, setEstablishmentDateError] = useState(""); // 설립시기 에러
+    const [mainProducts, setMainProducts] = useState(''); // 주요 제품
+    const [mainActivities, setMainActivities] = useState(''); // 주요 활동
+    
+    // 하단 협의회 및 SNS 상태 관리
+    const [homepageYn, setHomepageYn] = useState('없음'); // 홈페이지 유무
+    const [homepageUrl, setHomepageUrl] = useState(''); // 홈페이지 URL
+    const [isYn, setIsYn] = useState('아니오'); // 협의회 회원여부 (라디오)
     const [memberOutDate, setMemberOutDate] = useState(''); // 탈퇴일자
-    const [memberOutDateError, setMemberOutDateError] = useState(""); // 탈퇴일자 에러 메시지 상태
-    const [households, setHouseholds] = useState('45'); // 세대수
-    const [population, setPopulation] = useState('112'); // 주민수
+    const [memberOutDateError, setMemberOutDateError] = useState(""); // 탈퇴일자 에러
+
+    const [households, setHouseholds] = useState(''); // 세대수
+    const [population, setPopulation] = useState(''); // 주민수
     const [businessAddress, setBusinessAddress] = useState(''); // 사업장 주소
-    const [isScriptLoaded, setIsScriptLoaded] = useState(false); // Daum 스크립트 로드 상태
-    const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 검색 팝업 열림 상태
+    const [isScriptLoaded, setIsScriptLoaded] = useState(false); // Daum 스크립트 상태
+    const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 팝업 상태
+    const [isLoadingDetail, setIsLoadingDetail] = useState(false); // 상세조회 로딩 상태
 
-    // 기본값을 'N' 또는 '아니오'로 설정합니다. 여기서는 '아니오'로 지정하겠습니다.
-    const [isYn, setIsYn] = useState('아니오');
-
-    // Inertia 초기 props 동기화
-    // 설립목적(BC0001) 콤보박스 상태 동기화
+    // 🔥 [추가] 목록에서 행 클릭 시 (%s 파라미터 쿼리 결과) 데이터를 받아와 화면 상태에 채워주는 훅
     useEffect(() => {
-        if (initialPurposes?.length > 0) {
-            setPurposeOptions(initialPurposes);
-            setPurposesLoaded(true);
-        }
-    }, [initialPurposes]);
-    // 설립유형(BC0002) 콤보박스 상태 동기화
-    useEffect(() => {
-        if (initialEstablishmentTypes?.length > 0) {
-            setEstablishmentTypeOptions(initialEstablishmentTypes);
-            setEstablishmentTypesLoaded(true);
-        }
-    }, [initialEstablishmentTypes]);
-    // 법인유형(BC0003) 콤보박스 상태 동기화
-    useEffect(() => {
-        if (initialCorporationTypes?.length > 0) {
-            setCorporationTypeOptions(initialCorporationTypes);
-            setCorporationTypesLoaded(true);
-        }
-    }, [initialCorporationTypes]);
+        const fetchVillageDetail = async () => {
+            
+            setIsLoadingDetail(true);
+            try {
+                // 2026.05.28 1. 5개의 공통 코드 데이터를 병렬로 동시에 가져옵니다. (속도 최적화)
+                const [purpRes, estRes, corpRes, repRes, workRes] = await Promise.all([
+                    fetch('/village/purposes/'),
+                    fetch('/village/establishment-types/'),
+                    fetch('/village/corporation-types/'),
+                    fetch('/village/repactivity-types/'),
+                    fetch('/village/workactivity-types/')
+                ]);
 
-    // 대표자 활동유형(BC0004) 콤보박스 상태 동기화
-    useEffect(() => {
-        if (initialRepactivityTypes?.length > 0) {
-            setRepactivityTypeOptions(initialRepactivityTypes);
-            setRepactivityTypesLoaded(true);
-        }
-    }, [initialRepactivityTypes]);
+                // 공통 코드 데이터 파싱 및 매핑 헬퍼 함수
+                const parseOptions = async (res) => {
+                    if (!res.ok) return [];
+                    const data = await res.json();
+                    return (Array.isArray(data) ? data : []).map(item => ({
+                        code: item.code ?? item.dtl_cd,
+                        name: item.name ?? item.dtl_nm,
+                    }));
+                };
 
-    // 실무자 활동유형(BC0004) 콤보삭스 상태 동기화
-    useEffect(() => {
-        if (initialWorkactivityTypes?.length > 0) {
-            setWorkactivityTypeOptions(initialWorkactivityTypes);
-            setWorkactivityTypesLoaded(true);
-        }
-    }, [initialWorkactivityTypes]);
-    
+                // 2026.05.28 공통 코드 파싱한 데이터를 옵션 상태에 저장합니다.
+                setPurposeOptions(await parseOptions(purpRes));
+                setEstablishmentTypeOptions(await parseOptions(estRes));
+                setCorporationTypeOptions(await parseOptions(corpRes));
+                setRepactivityTypeOptions(await parseOptions(repRes));
+                setWorkactivityTypeOptions(await parseOptions(workRes));
+                
+                // 2026.05.28 2. 기존 마을 데이터 상세조회 및 바인딩
+                if (vilMngNo) {
+                    const response = await fetch(`/village/info-detail-api/${vilMngNo}/`);
+                    if (!response.ok) throw new Error("상세조회 실패");
+                    const data = await response.json();
 
+                    // 1. 마을 기본정보 바인딩
+                    setVillageName(data.vil_nm || '');
+                    setCorpName(data.comp_corp_nm || '');
+                    setBusinessAddress(data.biz_addr || '');
+                    setHouseholds(data.household_cnt ? String(data.household_cnt) : '0');
+                    setPopulation(data.resident_cnt ? String(data.resident_cnt) : '0');
+                    setLeaderName(data.leader_nm || '');
+                    
+                    // 2. 대표자 정보 바인딩
+                    setOwnerName(data.owner_nm || '');
+                    setPhoneRep(data.owner_phone_no ? data.owner_phone_no.replace(/\D/g, '') : '');
+                    setBirthDateRep(data.owner_birth_dt ? data.owner_birth_dt.replace(/\D/g, '') : '');
+                    setOwnerGender(data.owner_gender || '남성');
+                    setEmailRep(data.owner_email || '');
+                    
+                    // 3. 실무자 정보 바인딩 (새 확장 쿼리 데이터 매핑)
+                    setWorkerName(data.worker_nm || '');
+                    setPhoneWorker(data.worker_phone_no ? data.worker_phone_no.replace(/\D/g, '') : '');
+                    setBirthDateWorker(data.worker_birth_dt ? data.worker_birth_dt.replace(/\D/g, '') : '');
+                    setWorkerGender(data.worker_gender || '여성');
+                    setEmailWorker(data.worker_email || '');
 
-    
+                    // 4. 설립 및 기타 운영 상태 바인딩 2026.05.28 [신규 추가]
+                    setEstablishmentDate(data.inst_dt ? data.inst_dt.replace(/\D/g, '') : ''); // 설립일자('-' 제거 후 세팅)
+                    setMainProducts(data.main_prod_cn || ''); // 주요제품내용 상태 세팅
+                    setMainActivities(data.main_act_cn || ''); // 주요활동내용 상태 세팅
+
+                    // 5. 하단 협의회 및 홈페이지 정보 바인딩
+                    setHomepageYn(data.homepage_yn === 'Y' ? '있음' : '없음');
+                    setHomepageUrl(data.homepage_url || '');
+                    setIsYn(data.council_mbr_yn === 'Y' ? '예' : '아니오');
+                    setMemberOutDate(data.whdw_dt ? data.whdw_dt.replace(/\D/g, '') : '');
+
+                    // [핵심] 위에서 공통코드를 셋팅했으므로, DB값이 들어가는 순간 콤보박스에 자동 매핑됩니다.
+                    setSelectedPurpose(data.inst_purp_cd || ''); 
+                    setSelectedEstablishmentType(data.inst_type_cd || '');    
+                    setSelectedCorporationType(data.corp_type_cd || '');      
+                    setSelectedRepactivityType(data.rep_act_type_cd || '');
+                    setSelectedWorkactivityType(data.wrk_act_type_cd || '');
+                } else {
+                setVillageName(currentTab?.villageName || '신규 마을');
+                // setHouseholds('45');
+                // setPopulation('112');
+                }
+
+            } catch (error) {
+                console.error("마을 데이터 상세 바인딩 실패:", error);
+            } finally {
+                setIsLoadingDetail(false);
+            }
+        };
+
+        fetchVillageDetail();
+    }, [vilMngNo, currentTab]);
+
+       
     // Daum Postcode API 스크립트 동적 로드
     useEffect(() => {
-        // 이미 스크립트가 로드되었는지 확인
         if (window.daum && window.daum.Postcode) {
-            console.log('[Daum API] 이미 로드됨');
             setIsScriptLoaded(true);
             return;
         }
-
-        // 이미 스크립트가 DOM에 있는지 확인
         const existingScript = document.querySelector('script[src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"]');
         if (existingScript) {
-            console.log('[Daum API] 스크립트가 이미 DOM에 있습니다.');
             setIsScriptLoaded(true);
             return;
         }
-
-        // 새로운 스크립트 생성
         const script = document.createElement('script');
         script.src = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
         script.async = true;
         script.onload = () => {
-            console.log('[Daum API] 스크립트 로드 완료!');
             setIsScriptLoaded(true);
         };
         script.onerror = () => {
-            console.error('[Daum API] 스크립트 로드 실패');
             setIsScriptLoaded(false);
         };
         document.head.appendChild(script);
-
-        // cleanup 함수는 필요 없음 (스크립트는 유지)
     }, []);
 
-
-    // [핸들러] 입력 시 숫자만 추출하여 상태에 저장
     const handleNumberInput = (e, setter) => {
-        const value = e.target.value.replace(/\D/g, ''); // 숫자만
+        const value = e.target.value.replace(/\D/g, '');
         setter(value);
     };
 
-    // [포맷팅] 숫자를 010-0000-0000 형식으로 변환하여 화면에 표시
     const formatPhoneNumber = (value) => {
         if (!value) return '';
-        const clean = value.replace(/\D/g, ''); // 숫자 외 제거
+        const clean = value.replace(/\D/g, '');
         if (clean.length <= 3) return clean;
         if (clean.length <= 7) return `${clean.slice(0, 3)}-${clean.slice(3)}`;
         return `${clean.slice(0, 3)}-${clean.slice(3, 7)}-${clean.slice(7, 11)}`;
     };
 
-    // 연령 계산
     const calculateAge = (birthDate) => {
         if (!birthDate || birthDate.length !== 8) return '';
         const year = parseInt(birthDate.slice(0, 4));
-        const month = parseInt(birthDate.slice(4, 6)) - 1; // 월은 0-based
+        const month = parseInt(birthDate.slice(4, 6)) - 1;
         const day = parseInt(birthDate.slice(6, 8));
         const birth = new Date(year, month, day);
         const today = new Date();
@@ -173,7 +227,6 @@ export default function VillageInfoCreate({
     const ageRep = birthDateErrorRep ? '' : calculateAge(birthDateRep);
     const ageWorker = birthDateErrorWorker ? '' : calculateAge(birthDateWorker);
 
-    // 8자리 숫자를 0000-00-00 형식으로 변환 포맷팅 함수
     const formatBirthDate = (value) => {
         const clean = value.replace(/\D/g, '');
         if (clean.length === 8) {
@@ -182,9 +235,8 @@ export default function VillageInfoCreate({
         return value;
     };
 
-    // 년도 입력 핸들러 (숫자만 입력, 8자리 완성 시 유효성 체크)
     const handleBirthDateChange = (e, setter, errorSetter) => {
-        const value = e.target.value.replace(/\D/g, ''); // 숫자만 남김
+        const value = e.target.value.replace(/\D/g, '');
         setter(value);
 
         if (value.length === 8) {
@@ -194,15 +246,14 @@ export default function VillageInfoCreate({
             const date = new Date(year, month - 1, day);
             const today = new Date();
 
-            // 유효성 체크: 실제 존재하는 날짜인지 확인
             if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day || year < 1800) {
                 errorSetter("날짜 형식이 다릅니다.");
-                setter(""); // 입력 박스 클리어
+                setter("");
             } else if (date > today) {
                 errorSetter("미래 날짜는 입력할 수 없습니다.");
-                setter(""); // 입력 박스 클리어
+                setter("");
             } else {
-                errorSetter(""); // 정상일 때 에러 삭제
+                errorSetter("");
             }
         } else if (value.length > 0) {
             errorSetter("8자리 숫자로 입력해주세요.");
@@ -211,164 +262,45 @@ export default function VillageInfoCreate({
         }
     };
 
-    // 주소 검색 완료 핸들러
     const handleAddressSelect = () => {
-        // [추가] 이미 팝업이 열려 있는 경우 함수 종료
-        if (isPostcodeOpen) {
-        console.log('[주소검색] 이미 팝업이 열려 있어 중복 실행을 방지합니다.');
-        return;
-        }
-
+        if (isPostcodeOpen) return;
         if (!isScriptLoaded || typeof window.daum === 'undefined') {
             alert('주소 검색 서비스를 초기화 중입니다. 잠시 후 다시 시도해주세요.');
-            console.warn('[주소검색] Daum API가 아직 준비되지 않았습니다. isScriptLoaded:', isScriptLoaded);
             return;
         }
-        
         try {
-            console.log('[주소검색] Postcode 팝업 열기 시도...');
-
-            setIsPostcodeOpen(true); // 팝업 열림 상태 설정
-
+            setIsPostcodeOpen(true);
             new window.daum.Postcode({
                 oncomplete: (data) => {
-                    let fullAddress = '';
-
-                    if (data.userSelectedType === 'R') {
-                        fullAddress = data.roadAddress; // 도로명 주소
-                    } else { 
-                        fullAddress = data.jibunAddress; // 지번 주소
-                    }
-
-                    // const fullAddress = `${data.zonecode} ${data.address}`; // 기존 주소 형식
-                    // const fullAddress = `${data.address}`; // 우편번호 제거된 주소 형식
-                    const finalAddress = `${fullAddress}`; // 우편번호 포함된 주소 형식
-
-                    setBusinessAddress(finalAddress);
-                    setIsPostcodeOpen(false); // [추가] 데이터 선택 완료 시 상태 변경
+                    let fullAddress = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
+                    setBusinessAddress(fullAddress);
+                    setIsPostcodeOpen(false);
                 },
                 onclose: () => {
-                    console.log('[주소검색] 팝업 닫힘');
-                    setIsPostcodeOpen(false); // [추가] 팝업이 닫힐 때 상태 변경
+                    setIsPostcodeOpen(false);
                 }
             }).open();
-            // console.log('[주소검색] Postcode 팝업 열기 성공');
         } catch (error) {
             console.error('[주소검색] 팝업 열기 실패:', error);
-            alert('주소 검색 팝업을 열 수 없습니다. 콘솔을 확인해주세요.');
-            setIsPostcodeOpen(false); // [추가] 에러 발생 시 상태 변경
+            setIsPostcodeOpen(false);
         }
     };
 
-    // 공통코드 데이터를 렌더링하는 함수
-    const mapComcodeRows = (data) => {
-        const rows = Array.isArray(data) ? data : [];
-        return rows.map((item) => ({
-            code: item.code ?? item.dtl_cd,
-            name: item.name ?? item.dtl_nm,
-        }));
-    };
-
-    // 설립목적 공통코드(BC0001) DB 조회
-    const fetchComcodeOptions = async (url, label, loaded, isLoading, setOptions, setLoaded, setLoading) => {
-        if (loaded || isLoading) return;
-        setLoading(true);
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const data = await response.json();
-            console.log('[공통코드] 조회 데이터:', data);
-            setOptions(mapComcodeRows(data));
-            setLoaded(true);
-        } catch (error) {
-            console.error(`[${label}] 공통코드 조회 실패:`, error);
-            setOptions([]);
-        } finally {
-            setLoading(false);
-        }
-    };
-    const handlePurposeSelectClick = () => {
-        fetchComcodeOptions(
-            '/village/purposes/',
-            '설립목적',
-            purposesLoaded,
-            isPurposeLoading,
-            setPurposeOptions,
-            setPurposesLoaded,
-            setIsPurposeLoading,
-        );
-    };
-    const handleEstablishmentTypeSelectClick = () => {
-        fetchComcodeOptions(
-            '/village/establishment-types/',
-            '설립유형',
-            establishmentTypesLoaded,
-            isEstablishmentTypeLoading,
-            setEstablishmentTypeOptions,
-            setEstablishmentTypesLoaded,
-            setIsEstablishmentTypeLoading,
-        );
-    };
-    const handleCorporationTypeSelectClick = () => {
-        fetchComcodeOptions(
-            '/village/corporation-types/',
-            '법인유형',
-            corporationTypesLoaded,
-            isCorporationTypeLoading,
-            setCorporationTypeOptions,
-            setCorporationTypesLoaded,
-            setIsCorporationTypeLoading,
-        );
-    };
-    const handleRepActivityTypeSelectClick = () => {
-        fetchComcodeOptions(
-            '/village/repactivity-types/',
-            '활동유형',
-            repactivityTypesLoaded,
-            isRepactivityTypeLoading,
-            setRepactivityTypeOptions,
-            setRepactivityTypesLoaded,
-            setIsRepactivityTypeLoading,
-        );
-    };
-    const handleWorkActivityTypeSelectClick = () => {
-        fetchComcodeOptions(
-            '/village/workactivity-types/',
-            '활동유형',
-            workactivityTypesLoaded,
-            isWorkactivityTypeLoading,
-            setWorkactivityTypeOptions,
-            setWorkactivityTypesLoaded,
-            setIsWorkactivityTypeLoading,
-        );
-    };
-    const renderComcodeOptions = (options, isLoading, loadingLabel) => {
-        if (isLoading) {
-            return <option value="" disabled>{loadingLabel} 불러오는 중...</option>;
-        }
-        if (!options?.length) return null;
-        return options.map((item) => (
-            <option key={item.code} value={item.code}>
-                {item.name}
-            </option>
-        ));
-    };
 
     return (
         <MainLayout>
-            {/* 상단 헤더 섹션 (처음부터 블루 네온 적용된 버전) */}
-            {/* <div className="flex items-center justify-between mb-8 p-8 bg-white rounded-lg border border-blue-50/50 shadow-[0_8px_30px_rgba(37,99,235,0.06)] transition-all hover:shadow-xl hover:border-blue-100"> */}
+            {/* 상단 헤더 섹션 */}
             <div className="flex items-center justify-between mb-8 p-8 bg-gray-200/20 rounded-lg border border-blue-100 shadow-xl transition-all">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-lg">동상면</span>
-                        <h1 className="text-3xl font-extrabold text-gray-950 tracking-tighter">{villageName}</h1>
+                        <h1 className="text-3xl font-extrabold text-gray-950 tracking-tighter">{villageName || '마을명 없음'}</h1>
                     </div>
-                    <p className="text-gray-500 font-medium">완주군 동상면 사봉리 123-12</p>
+                    {/* <p className="text-gray-500 font-medium">{businessAddress || '완주군 동상면 사봉리 123-12'}</p> */}
+                    <p className="text-gray-500 font-medium">{businessAddress || '마을 주소를 별도로 등록해 주세요.'}</p>
                 </div>
                 <div className="flex gap-3">
                     <button className="px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-lg hover:bg-gray-200 transition-all">임시저장</button>
-                    {/* 정보수정 버튼의 그림자도 shadow-lg로 강화하면 더 세련되어 보입니다 */}
                     <button className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">정보수정</button>
                 </div>
             </div>
@@ -379,10 +311,7 @@ export default function VillageInfoCreate({
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-8 py-3 rounded-xl text-lg font-bold transition-all ${activeTab === tab
-                            ? 'bg-white text-blue-600 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-600'
-                            }`}
+                        className={`px-8 py-3 rounded-xl text-lg font-bold transition-all ${activeTab === tab ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-600'}`}
                     >
                         {tab}
                     </button>
@@ -390,7 +319,6 @@ export default function VillageInfoCreate({
             </div>
 
             {/* 탭 콘텐츠 영역 */}
-            {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10"> */}
             <div className="bg-gray-500/50 rounded-lg border border-blue-100 shadow-[0_10px_40px_rgba(37,99,235,0.15)] p-10 transition-all">
                 {activeTab === '기본정보' && (
                     <div className="space-y-10">
@@ -407,8 +335,9 @@ export default function VillageInfoCreate({
                                     <input
                                         type="text"
                                         className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
-                                        defaultValue="밤티 마을"
-                                        readOnly
+                                        value={villageName}
+                                        onChange={(e) => setVillageName(e.target.value)}
+                                        readOnly={!!vilMngNo}
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -417,7 +346,8 @@ export default function VillageInfoCreate({
                                         type="text"
                                         className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
                                         placeholder="공동체 법인 (마을회사)명을 입력하세요"
-                                        // defaultValue="밤티 마을"
+                                        value={corpName}
+                                        onChange={(e) => setCorpName(e.target.value)}
                                     />
                                 </div>
 
@@ -426,17 +356,20 @@ export default function VillageInfoCreate({
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-semibold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
-                                            value={businessAddress}
-                                            // readOnly
-                                            onDoubleClick={() => {
-                                                console.log('[주소검색] 입력창 클릭됨');
-                                                handleAddressSelect();
-                                            }}
-                                            placeholder="더블 클릭 시 주소 검색창이 열립니다."
+                                            className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-semibold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md cursor-pointer hover:bg-gray-300/30 transition-all"
+                                            // 1. 초기 렌더링 시 DB에서 불러온 주소(businessAddress 상태값)를 먼저 보여줌
+                                            value={businessAddress || ''}
+                                            onChange={(e) => setBusinessAddress(e.target.value)}
+                                            readOnly
+                                            // 3. 사용자가 더블 클릭했을 때만 Daum 우편번호 검색 팝업 실행
+                                            onDoubleClick={handleAddressSelect}
+                                            placeholder="등록된 주소가 없습니다. 더블 클릭하여 주소를 검색하세요."
+                                            // 4. 무조건 입력을 막는 readOnly 대신, 더블클릭 팝업과 키보드 입력을 모두 허용하기 위해 readOnly는 제거합니다.
+                                            // (대신 사용자가 팝업을 쓰도록 안내 텍스트나 커서 포인터 스타일을 제공합니다)
                                         />
                                     </div>
                                 </div>
+
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">세대수</label>
                                     <input
@@ -457,8 +390,12 @@ export default function VillageInfoCreate({
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">이장명</label>
-                                    {/* <input type="text" className="p-4 bg-blue-50/50 rounded-lg border border-blue-100 font-bold text-blue-600 text-lg" defaultValue="김철수" /> */}
-                                    <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="김철수" />
+                                    <input 
+                                        type="text" 
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" 
+                                        value={leaderName} 
+                                        onChange={(e) => setLeaderName(e.target.value)}
+                                    />
                                 </div>
                             </div>
                         </section>
@@ -473,12 +410,16 @@ export default function VillageInfoCreate({
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">성명</label>
-                                    <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" />
+                                    <input 
+                                        type="text" 
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" 
+                                        value={ownerName}
+                                        onChange={(e) => setOwnerName(e.target.value)}
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">연락처</label>
                                     <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
-                                        // value에서 포맷팅 함수로 감싸주는 게 핵심입니다
                                         value={formatPhoneNumber(phoneRep)}
                                         onChange={(e) => handleNumberInput(e, setPhoneRep)}
                                         placeholder="000-0000-0000"
@@ -490,35 +431,32 @@ export default function VillageInfoCreate({
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
-                                                      ${birthDateErrorRep ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
+                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md ${birthDateErrorRep ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
                                             value={formatBirthDate(birthDateRep)}
                                             onChange={(e) => handleBirthDateChange(e, setBirthDateRep, setBirthDateErrorRep)}
                                             onBlur={() => setBirthDateErrorRep("")}
                                             placeholder="yyyy-mm-dd"
                                             maxLength="10"
                                         />
-                                        {/* 에러 메시지 표시 구문 추가 */}
-                                        {birthDateErrorRep && (
-                                            <p className="mt-2 ml-2 text-red-500 text-sm font-semibold">
-                                                {birthDateErrorRep}
-                                            </p>
-                                        )}
+                                        {birthDateErrorRep && <p className="mt-2 ml-2 text-red-500 text-sm font-semibold">{birthDateErrorRep}</p>}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">연령</label>
                                     <input type="text" 
                                            className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
-                                           placeholder="생년월일 입력 시 자동 적용 됩니다."
+                                           placeholder="자동 계산"
                                            readOnly
                                            value={ageRep}
                                     />
                                 </div>
-                                 {/* 성별 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">성별</label>
-                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer" defaultValue="남성" >
+                                    <select 
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer" 
+                                        value={ownerGender} 
+                                        onChange={(e) => setOwnerGender(e.target.value)}
+                                    >
                                         <option value="남성">남성</option>
                                         <option value="여성">여성</option>
                                     </select>
@@ -528,18 +466,22 @@ export default function VillageInfoCreate({
                                     <select 
                                         value={selectedRepactivityType}
                                         onChange={(e) => setSelectedRepactivityType(e.target.value)}
-                                        onFocus={handleRepActivityTypeSelectClick}
-                                        onMouseDown={handleRepActivityTypeSelectClick}
-                                        disabled={isRepactivityTypeLoading}
                                         className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
                                     >
-                                        <option value= "선택">{isRepactivityTypeLoading ? '불러오는 중...' : '선택'}</option>
-                                        {renderComcodeOptions(repactivityTypeOptions, isRepactivityTypeLoading, '활동유형')}
+                                        <option value="선택"></option>
+                                        {repactivityTypeOptions.map((item) => (
+                                            <option key={item.code} value={item.code}>{item.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">E-메일</label>
-                                    <input type="email" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
+                                    <input 
+                                        type="email" 
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" 
+                                        value={emailRep} // 정의된 emailRep 매핑 완료
+                                        onChange={(e) => setEmailRep(e.target.value)}
+                                    />
                                 </div>
                             </div>
                         </section>
@@ -554,12 +496,16 @@ export default function VillageInfoCreate({
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">성명</label>
-                                    <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
+                                    <input 
+                                        type="text" 
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" 
+                                        value={workerName} 
+                                        onChange={(e) => setWorkerName(e.target.value)}
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">연락처</label>
                                     <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
-                                        // value에서 포맷팅 함수로 감싸주는 게 핵심입니다
                                         value={formatPhoneNumber(phoneWorker)}
                                         onChange={(e) => handleNumberInput(e, setPhoneWorker)}
                                         placeholder="000-0000-0000"
@@ -571,57 +517,57 @@ export default function VillageInfoCreate({
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
-                                                      ${birthDateErrorWorker ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
+                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md ${birthDateErrorWorker ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
                                             value={formatBirthDate(birthDateWorker)}
                                             onChange={(e) => handleBirthDateChange(e, setBirthDateWorker, setBirthDateErrorWorker)}
                                             onBlur={() => setBirthDateErrorWorker("")}
                                             placeholder="yyyy-mm-dd"
                                             maxLength="10"
                                         />
-                                        {/* 에러 메시지 표시 구문 추가 */}
-                                        {birthDateErrorWorker && (
-                                            <p className="mt-2 ml-2 text-red-500 text-sm font-semibold">
-                                                {birthDateErrorWorker}
-                                            </p>
-                                        )}
+                                        {birthDateErrorWorker && <p className="mt-2 ml-2 text-red-500 text-sm font-semibold">{birthDateErrorWorker}</p>}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">연령</label>
                                     <input type="text" 
                                            className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md"
-                                           placeholder="생년월일 입력 시 자동 적용 됩니다."
+                                           placeholder="자동 계산"
                                            readOnly
                                            value={ageWorker}
                                     />
                                 </div>
-                                {/* 성별 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">성별</label>
-                                    <select className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer" defaultValue="여성" >
+                                    <select 
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer" 
+                                        value={workerGender} 
+                                        onChange={(e) => setWorkerGender(e.target.value)}
+                                    >
                                         <option value="남성">남성</option>
                                         <option value="여성">여성</option>
                                     </select>
                                 </div>
-                                 {/* 실무자 활동유형 구분 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">활동유형</label>
                                     <select 
                                         value={selectedWorkactivityType}
                                         onChange={(e) => setSelectedWorkactivityType(e.target.value)}
-                                        onFocus={handleWorkActivityTypeSelectClick}
-                                        onMouseDown={handleWorkActivityTypeSelectClick}
-                                        disabled={isWorkactivityTypeLoading}
                                         className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
                                     >
-                                        <option value= "선택">{isWorkactivityTypeLoading ? '불러오는 중...' : '선택'}</option>
-                                        {renderComcodeOptions(workactivityTypeOptions, isWorkactivityTypeLoading, '활동유형')}
+                                        <option value="선택"></option>
+                                        {workactivityTypeOptions.map((item) => (
+                                            <option key={item.code} value={item.code}>{item.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">E-메일</label>
-                                    <input type="email" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
+                                    <input 
+                                        type="email" 
+                                        className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" 
+                                        value={emailWorker} 
+                                        onChange={(e) => setEmailWorker(e.target.value)}
+                                    />
                                 </div>
                             </div>
                         </section>
@@ -633,81 +579,66 @@ export default function VillageInfoCreate({
                                 <h3 className="text-xl font-bold text-gray-950">설립 및 목적</h3>
                             </div>
 
-                            {/* 상단 4분할 그리드 (선택 박스 적용) */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                                {/* 1. 설립목적 선택 박스 (동적 바인딩 적용 완료) */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">설립목적</label>
                                     <select 
                                         value={selectedPurpose}
                                         onChange={(e) => setSelectedPurpose(e.target.value)}
-                                        onFocus={handlePurposeSelectClick}
-                                        onMouseDown={handlePurposeSelectClick}
-                                        disabled={isPurposeLoading}
                                         className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
                                     >
-                                        <option value="선택">{isPurposeLoading ? '불러오는 중...' : '선택'}</option>
-                                        {renderComcodeOptions(purposeOptions, isPurposeLoading, '설립목적')}
+                                        <option value="선택"></option>
+                                        {purposeOptions.map((item) => (
+                                            <option key={item.code} value={item.code}>{item.name}</option>
+                                        ))}
                                     </select>
                                 </div>
 
-                                {/* 2. 설립유형 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">설립유형</label>
                                     <select
                                         value={selectedEstablishmentType}
                                         onChange={(e) => setSelectedEstablishmentType(e.target.value)}
-                                        onFocus={handleEstablishmentTypeSelectClick}
-                                        onMouseDown={handleEstablishmentTypeSelectClick}
-                                        disabled={isEstablishmentTypeLoading}
                                         className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
                                     >
-                                        <option value="선택">{isEstablishmentTypeLoading ? '불러오는 중...' : '선택'}</option>
-                                        {renderComcodeOptions(establishmentTypeOptions, isEstablishmentTypeLoading, '설립유형')}
+                                        <option value="선택"></option>
+                                        {establishmentTypeOptions.map((item) => (
+                                            <option key={item.code} value={item.code}>{item.name}</option>
+                                        ))}
                                     </select>
                                 </div>
 
-                                {/* 3. 법인유형 선택 박스 */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">법인유형</label>
                                     <select
                                         value={selectedCorporationType}
                                         onChange={(e) => setSelectedCorporationType(e.target.value)}
-                                        onFocus={handleCorporationTypeSelectClick}
-                                        onMouseDown={handleCorporationTypeSelectClick}
-                                        disabled={isCorporationTypeLoading}
                                         className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer disabled:opacity-60"
                                     >
-                                        <option value="선택">{isCorporationTypeLoading ? '불러오는 중...' : '선택'}</option>
-                                        {renderComcodeOptions(corporationTypeOptions, isCorporationTypeLoading, '법인유형')}
+                                        <option value="선택"></option>
+                                        {corporationTypeOptions.map((item) => (
+                                            <option key={item.code} value={item.code}>{item.name}</option>
+                                        ))}
                                     </select>
                                 </div>
 
-                                {/* 4. 설립시기 선택 (년-월-일 달력 적용) */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">설립일자</label>
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
-                                                      ${establishmentDateError ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
+                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md ${establishmentDateError ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
                                             value={formatBirthDate(establishmentDate)}
                                             onChange={(e) => handleBirthDateChange(e, setEstablishmentDate, setEstablishmentDateError)}
                                             onBlur={() => setEstablishmentDateError("")}
                                             placeholder="yyyy-mm-dd"
                                             maxLength="10"
                                         />
-                                        {/* 에러 메시지 표시 구문 추가 */}
-                                        {establishmentDateError && (
-                                            <p className="mt-2 ml-2 text-red-500 text-sm font-semibold">
-                                                {establishmentDateError}
-                                            </p>
-                                        )}
+                                        {establishmentDateError && <p className="mt-2 ml-2 text-red-500 text-sm font-semibold">{establishmentDateError}</p>}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* 하단 주요 제품 및 활동 입력 영역 (이전 수정 내용 유지) */}
                             <div className="p-8 bg-blue-600 rounded-lg text-white shadow-lg shadow-blue-100 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
@@ -715,7 +646,9 @@ export default function VillageInfoCreate({
                                         <input
                                             type="text"
                                             className="w-full p-4 bg-white/10 border border-white/20 rounded-lg font-bold text-white placeholder:text-white/40 focus:ring-2 focus:ring-white/30 text-md backdrop-blur-md"
-                                            defaultValue="썰매체험, 곤충체험, 산촌체험"
+                                            value={mainProducts}
+                                            onChange={(e) => setMainProducts(e.target.value)}
+                                            placeholder="제품명을 입력하세요"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -723,7 +656,9 @@ export default function VillageInfoCreate({
                                         <input
                                             type="text"
                                             className="w-full p-4 bg-white/10 border border-white/20 rounded-lg font-bold text-white placeholder:text-white/40 focus:ring-2 focus:ring-white/30 text-md backdrop-blur-md"
-                                            defaultValue="마을 자원을 활용한 계절별 체험 프로그램 위주 운영"
+                                            value={mainActivities}
+                                            onChange={(e) => setMainActivities(e.target.value)}
+                                            placeholder="활동 내용을 입력하세요"
                                         />
                                     </div>
                                 </div>
@@ -733,59 +668,39 @@ export default function VillageInfoCreate({
                         {/* 섹션 4: 기타 정보 */}
                         <section className="p-8 bg-white rounded-lg border border-gray-200 shadow-sm">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                                {/* 완주마을공동체 협의회 회원 여부 섹션 */}
-
-                                {/* <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-500 ml-1">성명</label>
-                                    <input type="text" className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md" defaultValue="" />
-                                </div> */}
-                                {/* 홈페이지 정보 섹션 */}
                                 <div className="space-y-3">
                                     <label className="text-sm font-bold text-gray-500 ml-1">홈페이지(SNS) 유무</label>
                                     <div className="flex flex-col sm:flex-row gap-4">
-                                        {/* 선택 박스 (기본값: 없음) */}
                                         <select
                                             className="w-full sm:w-40 p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md appearance-none cursor-pointer"
-                                            defaultValue="없음"
-                                            onChange={(e) => {
-                                                const inputWrapper = document.getElementById('homepage-input-wrapper');
-                                                const noneText = document.getElementById('homepage-none-text');
-
-                                                if (e.target.value === '있음') {
-                                                    inputWrapper.classList.remove('hidden');
-                                                    noneText.classList.add('hidden');
-                                                } else {
-                                                    inputWrapper.classList.add('hidden');
-                                                    noneText.classList.remove('hidden');
-                                                }
-                                            }}
+                                            value={homepageYn}
+                                            onChange={(e) => setHomepageYn(e.target.value)}
                                         >
                                             <option value="없음">없음</option>
                                             <option value="있음">있음</option>
                                         </select>
 
-                                        {/* '있음' 선택 시 활성화되는 입력 박스 (기본값: 숨김) */}
-                                        <div id="homepage-input-wrapper" className="flex-1 hidden">
-                                            <input
-                                                type="text"
-                                                placeholder="https://example.com"
-                                                className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-lg font-bold text-blue-600 focus:ring-2 focus:ring-blue-200 text-md"
-                                            />
-                                        </div>
-
-                                        {/* '없음' 상태일 때 보여줄 기본 안내 문구 */}
-                                        <div id="homepage-none-text" className="flex items-center">
-                                            <span className="text-gray-400 text-sm font-medium ml-1">등록된 웹 주소가 없습니다.</span>
-                                        </div>
+                                        {homepageYn === '있음' ? (
+                                            <div className="flex-1">
+                                                <input
+                                                    type="text"
+                                                    placeholder="https://example.com"
+                                                    className="w-full p-4 bg-blue-50/50 border border-blue-100 rounded-lg font-bold text-blue-600 focus:ring-2 focus:ring-blue-200 text-md"
+                                                    value={homepageUrl}
+                                                    onChange={(e) => setHomepageUrl(e.target.value)}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center">
+                                                <span className="text-gray-400 text-sm font-medium ml-1">등록된 웹 주소가 없습니다.</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">마을공동체 협의회 회원 여부</label>
-                                    {/* flex, justify-center, items-center를 추가하여 내부 라디오 버튼들을 가로로 나열하고 정중앙 정렬합니다. */}
                                     <div className="w-full p-4 bg-gray-300/40 border-none rounded-lg font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 text-md flex justify-center items-center gap-10">
-                                        
-                                        {/* '아니오' 라디오 버튼 */}
                                         <label className="flex items-center gap-2 cursor-pointer text-md font-semibold text-gray-950">
                                             <input
                                                 type="radio"
@@ -797,8 +712,6 @@ export default function VillageInfoCreate({
                                             />
                                             <span>아니오</span>
                                         </label>
-
-                                        {/* '예' 라디오 버튼 (이제 아니오 오른쪽에 정렬됩니다) */}
                                         <label className="flex items-center gap-2 cursor-pointer text-md font-semibold text-gray-950">
                                             <input
                                                 type="radio"
@@ -810,30 +723,22 @@ export default function VillageInfoCreate({
                                             />
                                             <span>예</span>
                                         </label>
-                                        
                                     </div>
                                 </div>
 
-                                {/* 4.3 탈퇴일자 입력 (년-월-일 형식) */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-500 ml-1">회원 탈퇴일자</label>
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md 
-                                                      ${memberOutDateError ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
+                                            className={`w-full p-4 bg-gray-300/40 rounded-lg font-bold text-gray-900 focus:ring-2 text-md ${memberOutDateError ? 'border-2 border-red-500 focus:ring-red-100' : 'border-none focus:ring-blue-100'}`}
                                             value={formatBirthDate(memberOutDate)}
                                             onChange={(e) => handleBirthDateChange(e, setMemberOutDate, setMemberOutDateError)}
                                             onBlur={() => setMemberOutDateError("")}
                                             placeholder="yyyy-mm-dd"
                                             maxLength="10"
                                         />
-                                        {/* 에러 메시지 표시 구문 추가 */}
-                                        {memberOutDateError && (
-                                            <p className="mt-2 ml-2 text-red-500 text-sm font-semibold">
-                                                {memberOutDateError}
-                                            </p>
-                                        )}
+                                        {memberOutDateError && <p className="mt-2 ml-2 text-red-500 text-sm font-semibold">{memberOutDateError}</p>}
                                     </div>
                                 </div>
                             </div>
@@ -843,7 +748,6 @@ export default function VillageInfoCreate({
 
                 {activeTab === '지원사업' && (
                     <div className="space-y-8">
-                        {/* 1. 요약 통계 카드 */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                             <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
                                 <p className="text-sm font-bold text-blue-400 mb-1">총 지원 건수</p>
@@ -859,7 +763,6 @@ export default function VillageInfoCreate({
                             </div>
                         </div>
 
-                        {/* 2. 지원사업 상세 테이블 */}
                         <section>
                             <div className="flex items-center justify-between mb-6 px-2">
                                 <div className="flex items-center gap-3">
@@ -913,7 +816,6 @@ export default function VillageInfoCreate({
                             </div>
                         </section>
 
-                        {/* 3. 안내 문구 */}
                         <div className="p-6 bg-orange-50 rounded-lg border border-orange-100 flex items-center gap-4">
                             <span className="text-2xl">💡</span>
                             <p className="text-sm text-orange-700 font-medium">
@@ -980,11 +882,9 @@ export default function VillageInfoCreate({
                                     <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
                                     <h3 className="text-xl font-bold text-gray-950">장비(가공·집기) 지원현황</h3>
                                 </div>
-                                {/* <span className="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">단위: 천원</span> */}
-                                <span  className="text-xs font-bold text-gray-950 uppercase tracking-tighter">Unit: KRW (1,000)</span>
+                                <span className="text-xs font-bold text-gray-950 uppercase tracking-tighter">Unit: KRW (1,000)</span>
                             </div>
 
-                            {/* <div className="overflow-x-auto bg-white rounded-[32px] border border-blue-100 shadow-[0_10px_40px_rgba(37,99,235,0.15)] transition-all"> */}
                             <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                                 <table className="w-full text-center">
                                     <thead>
@@ -1020,72 +920,65 @@ export default function VillageInfoCreate({
                             </div>
                         </section>
                     </div>
-                )
-                }
+                )}
 
-                {
-                    activeTab === '사업장 전경' && (
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
-                                    <h3 className="text-xl font-bold text-gray-950">사업장 전경 이미지</h3>
-                                </div>
-                                <button className="px-5 py-2.5 bg-gray-950 text-white font-bold rounded-xl hover:bg-black transition-all flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                                    </svg>
-                                    이미지 업로드
-                                </button>
+                {activeTab === '사업장 전경' && (
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="w-1.5 h-6 bg-blue-600 rounded-lg"></div>
+                                <h3 className="text-xl font-bold text-gray-950">사업장 전경 이미지</h3>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {[
-                                    { title: '외부 전경 (동상면 사봉리)', desc: '마을 공동체 및 썰매장 진입로' },
-                                    { title: '내부 시설 (다목적체험관)', desc: '곤충 체험 및 실내 활동 공간' },
-                                    { title: '만경강 발원샘', desc: '마을 스토리텔링 연계 자원' },
-                                ].map((img, i) => (
-                                    <div key={i} className="group relative cursor-pointer">
-                                        <div className="aspect-video bg-gray-100 rounded-lg mb-3 overflow-hidden border border-gray-200 flex items-center justify-center text-gray-300 font-bold text-lg group-hover:bg-gray-200 transition-all">
-                                            PHOTO AREA
-                                        </div>
-                                        <button className="absolute top-4 right-4 p-2.5 bg-red-500/90 hover:bg-red-600 text-white rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm" title="삭제">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                                            </svg>
-                                        </button>
-                                        <div className="px-1">
-                                            <h4 className="text-sm font-bold text-gray-800">{img.title}</h4>
-                                            <p className="text-xs text-gray-400 mt-1 font-medium">{img.desc}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                            <button className="px-5 py-2.5 bg-gray-950 text-white font-bold rounded-xl hover:bg-black transition-all flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                                </svg>
+                                이미지 업로드
+                            </button>
                         </div>
-                    )
-                }
-
-                {
-                    activeTab === '현장점검' && (
-                        <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {[
-                                { date: '2026.04.08', visitor: '최현주 외 4명', content: '현실적으로 운영이 멈춘 상태로 보임. 마을이장 장종수님이 협의회 참석 예정' },
-                                { date: '2021.03', visitor: '최은아 외 2명', content: '온난화로 인한 얼음 썰매장 개장 불가. 대체사업 발굴 및 컨설팅 추진 필요' },
-                            ].map((log, i) => (
-                                <div key={i} className="p-6 bg-gray-50 rounded-lg border border-gray-200 relative overflow-hidden group">
-                                    <div className="absolute left-0 top-0 w-1 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-all"></div>
-                                    <div className="flex justify-between items-start mb-4">
-                                        <span className="text-blue-600 font-bold font-mono">{log.date}</span>
-                                        <span className="text-xs font-bold text-gray-400 bg-white px-3 py-1 rounded-lg border border-gray-200">방문자: {log.visitor}</span>
+                                { title: '외부 전경 (동상면 사봉리)', desc: '마을 공동체 및 썰매장 진입로' },
+                                { title: '내부 시설 (다목적체험관)', desc: '곤충 체험 및 실내 활동 공간' },
+                                { title: '만경강 발원샘', desc: '마을 스토리텔링 연계 자원' },
+                            ].map((img, i) => (
+                                <div key={i} className="group relative cursor-pointer">
+                                    <div className="aspect-video bg-gray-100 rounded-lg mb-3 overflow-hidden border border-gray-200 flex items-center justify-center text-gray-300 font-bold text-lg group-hover:bg-gray-200 transition-all">
+                                        PHOTO AREA
                                     </div>
-                                    <p className="text-gray-700 leading-relaxed font-medium">{log.content}</p>
+                                    <button className="absolute top-4 right-4 p-2.5 bg-red-500/90 hover:bg-red-600 text-white rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm" title="삭제">
+                                        <svg xmlns="http://www.w3.org/2000/xl" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <div className="px-1">
+                                        <h4 className="text-sm font-bold text-gray-800">{img.title}</h4>
+                                        <p className="text-xs text-gray-400 mt-1 font-medium">{img.desc}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
-                    )
-                }
-            </div >
-        </MainLayout >
+                    </div>
+                )}
+
+                {activeTab === '현장점검' && (
+                    <div className="space-y-6">
+                        {[
+                            { date: '2026.04.08', visitor: '최현주 외 4명', content: '현실적으로 운영이 멈춘 상태로 보임. 마을이장 장종수님이 협의회 참석 예정' },
+                            { date: '2021.03', visitor: '최은아 외 2명', content: '온난화로 인한 얼음 썰매장 개장 불가. 대체사업 발굴 및 컨설팅 추진 필요' },
+                        ].map((log, i) => (
+                            <div key={i} className="p-6 bg-gray-50 rounded-lg border border-gray-200 relative overflow-hidden group">
+                                <div className="absolute left-0 top-0 w-1 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-all"></div>
+                                <div className="flex justify-between items-start mb-4">
+                                    <span className="text-blue-600 font-bold font-mono">{log.date}</span>
+                                    <span className="text-xs font-bold text-gray-400 bg-white px-3 py-1 rounded-lg border border-gray-200">방문자: {log.visitor}</span>
+                                </div>
+                                <p className="text-gray-700 leading-relaxed font-medium">{log.content}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </MainLayout>
     );
 }
-
-

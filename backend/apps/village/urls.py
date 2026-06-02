@@ -29,7 +29,10 @@ urlpatterns = [
     path('establishment-types/', views.establishment_types, name='establishment_types'),
     path('corporation-types/', views.corporation_types, name='corporation_types'),
     path('repactivity-types/', views.repactivity_types, name='repactivity_types'),
-    path('workactivity-types/', views.workactivity_types, name='workactivity_types'),        
+    path('workactivity-types/', views.workactivity_types, name='workactivity_types'),
+    path('info-search-api/', views.village_info_search_api, name='village_info_search_api'),
+    # 2026-05-26 추가: 단일 마을 상세조회 API
+    path('info-detail-api/<str:vil_mng_no>/', views.village_info_detail_api, name='village_info_detail_api'),
 
     # 9. 마을매출정보
     path('sales/', views.village_sales, name='village_sales'),
