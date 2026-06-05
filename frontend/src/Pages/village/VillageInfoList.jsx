@@ -102,7 +102,12 @@ export default function VillageInfoList({ regions = [] }) {
                             type="text" 
                             value={searchVillage}
                             onChange={(e) => setSearchVillage(e.target.value)}
-                            placeholder="마을 이름을 입력하세요" 
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSearch();
+                                }
+                            }}
+                            placeholder="마을 이름을 입력하세요 (Enter 입력 시 조회)" 
                             className="w-full p-4 bg-gray-100 border-none rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-100" 
                         />
                     </div>
@@ -126,7 +131,7 @@ export default function VillageInfoList({ regions = [] }) {
                             disabled={isLoading}
                             className="w-full md:w-3/4 h-[52px] bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all disabled:bg-gray-400"
                         >
-                            {isLoading ? '조회 중...' : '조회하기'}
+                            조회하기
                         </button>
                     </div>
                 </div>
@@ -211,13 +216,12 @@ export default function VillageInfoList({ regions = [] }) {
                     </table>
                 </div>
 
-                {/* 🎯 [버그 수정 완료] 완벽한 정중앙 정렬 및 우측 텍스트 배치 콤보 레이아웃 */}
+                {/* 페이지네이션 영역 */}
                 {totalPages > 1 && (
                     <div className="relative flex flex-col md:flex-row items-center justify-center border-t border-slate-100 pt-6 mt-6 gap-4 w-full min-h-[40px]">
                         
-                        {/* [가운데] 페이지네이션 네비게이션 바 (공간 제약 해제로 찌그러짐 현상 완벽 해결) */}
+                        {/* [가운데] 페이지네이션 네비게이션 바 */}
                         <nav aria-label="pagination" className="flex items-center justify-center gap-1.5 shrink-0 select-none">
-                            {/* 맨 처음 페이지 버튼 (◀◀) */}
                             <button
                                 onClick={() => setCurrentPage(1)}
                                 disabled={currentPage === 1}
@@ -227,7 +231,6 @@ export default function VillageInfoList({ regions = [] }) {
                                 <ChevronsLeft className="h-4 w-4 text-slate-500" />
                             </button>
 
-                            {/* 이전 페이지 버튼 (◀ 이전) */}
                             <button
                                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
@@ -238,7 +241,6 @@ export default function VillageInfoList({ regions = [] }) {
                                 <span className="hidden md:inline text-slate-600 font-medium">이전</span>
                             </button>
 
-                            {/* 숫자 페이지 블록 (1~10 단위) */}
                             <div className="flex items-center gap-1 shrink-0">
                                 {pageNumbers.map((page) => (
                                     <button
@@ -255,7 +257,6 @@ export default function VillageInfoList({ regions = [] }) {
                                 ))}
                             </div>
 
-                            {/* 다음 페이지 버튼 (다음 ▶) */}
                             <button
                                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
@@ -266,7 +267,6 @@ export default function VillageInfoList({ regions = [] }) {
                                 <ChevronRight className="h-4 w-4 text-slate-500" />
                             </button>
 
-                            {/* 맨 끝 페이지 버튼 (▶▶) */}
                             <button
                                 onClick={() => setCurrentPage(totalPages)}
                                 disabled={currentPage === totalPages}
@@ -277,10 +277,10 @@ export default function VillageInfoList({ regions = [] }) {
                             </button>
                         </nav>
 
-                        {/* [오른쪽 끝] 조회 결과 안내 (PC 버전에선 우측 절대좌표 고정, 모바일에선 아래에 정렬) */}
+                        {/* [오른쪽 끝] 조회 결과 안내 */}
                         <div className="md:absolute md:right-0 text-center md:text-right whitespace-nowrap mt-2 md:mt-0">
                             <p className="text-xs text-slate-400 font-medium tracking-tight">
-                                조회 결과 <span className="font-semibold text-slate-600">{filteredData.length}</span> 개 중{" "}
+                                조회 결과 <span className="font-semibold text-slate-600">{filteredData.length}</span>개 중{" "}
                                 <span className="font-semibold text-slate-600">{indexOfFirstItem + 1} - {Math.min(indexOfLastItem, filteredData.length)}</span> 표시
                             </p>
                         </div>

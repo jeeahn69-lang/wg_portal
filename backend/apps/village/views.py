@@ -187,6 +187,8 @@ def village_info_detail_api(request, vil_mng_no):
                 -- 1. 마을 기본정보
                 vmb.vil_mng_no              AS vil_mng_no,                      -- 마을관리번호
                 vmb.vil_nm                  AS vil_nm,                          -- 마을명
+                vmb.vil_jibun_addr          as vil_jibun_addr,                  -- 지번주소
+                sc.dtl_nm                   AS eubmyeon_nm,                     -- 읍면명칭
                 vcd.comp_corp_nm            AS comp_corp_nm,                    -- 공동체 법인명
                 vcd.biz_addr                AS biz_addr,                        -- 사업장 주소
                 vmb.household_cnt           AS household_cnt,                   -- 세대수
@@ -230,6 +232,7 @@ def village_info_detail_api(request, vil_mng_no):
                 TO_CHAR(vcd.whdw_dt, 'YYYY-MM-DD') AS whdw_dt                   -- 회원 탈퇴일자
             FROM public.vil_mng_bas vmb
             LEFT JOIN public.vil_comp_dtl vcd ON vmb.vil_mng_no = vcd.vil_mng_no
+            LEFT JOIN public.sys_comcode_dtl sc ON vmb.master_cd = sc.master_cd AND vmb.dtl_cd = sc.dtl_cd
             LEFT JOIN public.owner_info_dtl oi ON vmb.vil_mng_no = oi.vil_mng_no AND oi.use_yn = 'Y'
             LEFT JOIN public.mng_info_dtl mi ON vmb.vil_mng_no = mi.vil_mng_no AND mi.use_yn = 'Y'
             WHERE vmb.vil_mng_no = %s;

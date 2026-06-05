@@ -18,8 +18,12 @@ export default function AppTabs() {
   }
 
   const handleTabClick = (tab: Tab) => {
-    setActiveTab(tab.id);
-    router.visit(tab.path);
+    if (activeTabId === tab.id) return; // 활성화된 탭이면, 다시 활성화하지 않음 [2026.06.05] 
+
+    router.visit(tab.path, {
+        preserveState: true,  // 페이지 상태를 유지합니다 (예: 폼 데이터, 스크롤 위치 등) [2026.06.05]
+        preserveScroll: true, // 스크롤 위치를 유지합니다 [2026.06.05]
+    });
   };
 
   return (

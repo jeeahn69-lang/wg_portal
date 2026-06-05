@@ -16,6 +16,8 @@ export default function VillageInfoCreate({
     const vilMngNo = propsVilMngNo || currentTab?.vilMngNo || null;
     
     // 상태 제어를 위해 기존 고정값을 빈 문자열 상태로 전환
+    const [jibeonAddress, setJibeonAddress] = useState(''); // 2026.06.04 지번주소 상태 추가
+    const [eubmyeonName, setEubmyeonName] = useState(''); // 2026.06.04 읍면명 상태 추가
     const [villageName, setVillageName] = useState('');
     const [corpName, setCorpName] = useState(''); // 공동체 법인명
     const [leaderName, setLeaderName] = useState(''); // 이장명
@@ -119,6 +121,8 @@ export default function VillageInfoCreate({
 
                     // 1. 마을 기본정보 바인딩
                     setVillageName(data.vil_nm || '');
+                    setJibeonAddress(data.vil_jibun_addr || ''); // 2026.06.04 지번주소 추가
+                    setEubmyeonName(data.eubmyeon_nm || ''); // 2026.06.04 읍면명 추가
                     setCorpName(data.comp_corp_nm || '');
                     setBusinessAddress(data.biz_addr || '');
                     setHouseholds(data.household_cnt ? String(data.household_cnt) : '0');
@@ -255,7 +259,7 @@ export default function VillageInfoCreate({
             } else {
                 errorSetter("");
             }
-        } else if (value.length > 0) {
+        } else if (value.length > 8) {
             errorSetter("8자리 숫자로 입력해주세요.");
         } else {
             errorSetter("");
@@ -293,11 +297,11 @@ export default function VillageInfoCreate({
             <div className="flex items-center justify-between mb-8 p-8 bg-gray-200/20 rounded-lg border border-blue-100 shadow-xl transition-all">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
-                        <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-lg">동상면</span>
-                        <h1 className="text-3xl font-extrabold text-gray-950 tracking-tighter">{villageName || '마을명 없음'}</h1>
+                        <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-lg">{eubmyeonName}</span>
+                        <h1 className="text-3xl font-extrabold text-gray-950 tracking-tighter">{villageName}</h1>
                     </div>
                     {/* <p className="text-gray-500 font-medium">{businessAddress || '완주군 동상면 사봉리 123-12'}</p> */}
-                    <p className="text-gray-500 font-medium">{businessAddress || '마을 주소를 별도로 등록해 주세요.'}</p>
+                    <p className="text-gray-500 font-medium">{jibeonAddress || '마을 주소를 별도로 등록해 주세요.'}</p>
                 </div>
                 <div className="flex gap-3">
                     <button className="px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-lg hover:bg-gray-200 transition-all">임시저장</button>
