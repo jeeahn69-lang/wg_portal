@@ -1,5 +1,7 @@
 # backend/apps/village/urls.py
 from django.urls import path
+
+# from concurrent.interpreters import create
 from . import views
 
 urlpatterns = [
@@ -20,7 +22,10 @@ urlpatterns = [
     # path('system/', views.system_list, name='system_list'),
 
     # 6. 마을관리카드 (슬래시(/) 추가로 경로 일관성 유지)
-    path('card/', views.village_card, name='village_card'),
+    # path('card/', views.village_card, name='village_card'),
+    # [2026-06-05] 마을관리카드 API 경로를 '/village/create/'로 변경하여, 프론트엔드에서 해당 경로로 요청할 수 있도록 수정합니다.
+    path('create/', views.village_create, name='village_create'),
+
 
     # 7. 마을정보관리 (슬래시(/) 추가로 경로 일관성 유지)
     # path('vlinfo/', views.village_info, name='village_info'),

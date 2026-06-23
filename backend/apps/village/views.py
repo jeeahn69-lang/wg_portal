@@ -14,9 +14,14 @@ def village_list(request):
         'villages': villages
     })
 
-def village_card(request):
-    # 'village/VillageInfoCreate'는 Pages/village/VillageCard.jsx 파일을 의미합니다.
+# def village_card(request):
+#     # 'village/VillageInfoCreate'는 Pages/village/VillageCard.jsx 파일을 의미합니다.
+#     return inertia_render(request, 'village/VillageInfoCreate')
+
+# [2026-06-05] 마을관리카드 API 경로를 '/village/create/'로 변경하여, 프론트엔드에서 해당 경로로 요청할 수 있도록 수정합니다.
+def village_create(request):
     return inertia_render(request, 'village/VillageInfoCreate')
+
 
 def village_info_list(request):
     # 'village/VillageInfoCreate'는 Pages/village/VillageInfoCreate.jsx 파일을 의미합니다.
@@ -249,9 +254,9 @@ def village_info_detail_api(request, vil_mng_no):
             data = dict(zip(columns, row))
 
             # [디버깅] 여기에 프린트문을 찍어서 터미널에 'comp_corp_nm'이 어떻게 찍히는지 보세요!
-            print("====== 백엔드 최종 전송 데이터 ======")
-            print(data) 
-            print("==================================")
+            # print("====== 백엔드 최종 전송 데이터 ======")
+            # print(data) 
+            # print("==================================")
 
             
             # 클라이언트 단 포맷 안정성을 위한 Null 및 기본값 방어 코드

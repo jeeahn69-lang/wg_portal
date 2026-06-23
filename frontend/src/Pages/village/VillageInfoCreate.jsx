@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import MainLayout from "../../layouts/MainLayout";
 import { useTabs } from '../../context/TabContext';
+import { usePage } from '@inertiajs/react';
 
 export default function VillageInfoCreate({
     vilMngNo: propsVilMngNo = null, // 마을 리스트에서 행 클릭 시 전달받을 마을 관리 번호
-    // purposes: initialPurposes = [],
-    // establishmentTypes: initialEstablishmentTypes = [],
-    // corporationTypes: initialCorporationTypes = [],
-    // repactivityTypes: initialRepactivityTypes = [],
-    // workactivityTypes: initialWorkactivityTypes = [],
+     
 }) {
     const { openTabs, activeTabId } = useTabs();
     const currentTab = openTabs.find(tab => tab.id === activeTabId);
     // 2026.05.27 Props로 직접 넘어왔거나, 탭 객체(currentTab) 내부에 숨어있는 번호를 하나로 완벽하게 병합합니다.
     const vilMngNo = propsVilMngNo || currentTab?.vilMngNo || null;
-    
-    // 상태 제어를 위해 기존 고정값을 빈 문자열 상태로 전환
+
+    //const isDetailMode = currentTab?.id !== 'vlinfo'; // 'vlinfo'는 신규 등록용 탭 ID로 가정합니다. 실제로는 탭 생성 시 이 ID를 명확히 지정해야 합니다.
+
+    // 2026.06.23 수정: isDetailMode를 vilMngNo 존재 여부로 판단하도록 변경 (신규 등록 시 vilMngNo는 null)
+    const isDetailMode = !!vilMngNo;
+
+    // 2026.06.19 수정: 상태 제어를 위해 기존 고정값을 빈 문자열 상태로 전환
     const [jibeonAddress, setJibeonAddress] = useState(''); // 2026.06.04 지번주소 상태 추가
     const [eubmyeonName, setEubmyeonName] = useState(''); // 2026.06.04 읍면명 상태 추가
     const [villageName, setVillageName] = useState('');
@@ -81,11 +83,57 @@ export default function VillageInfoCreate({
     const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 팝업 상태
     const [isLoadingDetail, setIsLoadingDetail] = useState(false); // 상세조회 로딩 상태
 
+    // 2026.06.19 수정: resetForm 함수를 모든 상태 선언 뒤로 이동 (React Hook 에러 해결)
+    const resetForm = () => {
+        setVillageName('');
+        setJibeonAddress('');
+        setEubmyeonName('');
+        setCorpName('');
+        setBusinessAddress('');
+        setHouseholds('0');
+        setPopulation('0');
+        setLeaderName('');
+        setOwnerName('');
+        setPhoneRep('');
+        setBirthDateRep('');
+        setOwnerGender('남성');
+        setEmailRep('');
+        setWorkerName('');
+        setPhoneWorker('');
+        setBirthDateWorker('');
+        setWorkerGender('여성');
+        setEmailWorker('');
+        setEstablishmentDate('');
+        setMainProducts('');
+        setMainActivities('');
+        setHomepageYn('없음');
+        setHomepageUrl('');
+        setIsYn('아니오');
+        setMemberOutDate('');
+        setSelectedPurpose('');
+        setSelectedEstablishmentType('');
+        setSelectedCorporationType('');
+        setSelectedRepactivityType('');
+        setSelectedWorkactivityType('');
+    };
+
+
+   
+
     // 🔥 [추가] 목록에서 행 클릭 시 (%s 파라미터 쿼리 결과) 데이터를 받아와 화면 상태에 채워주는 훅
     useEffect(() => {
+
+        if (!isDetailMode) {
+            return; // 신규 등록 모드인 경우 상세조회 로직을 건너뜁니다.
+        }
+
         const fetchVillageDetail = async () => {
             
             setIsLoadingDetail(true);
+
+            // [2026.06.05] 상세조회 시작 시점에 모든 상태를 초기화하여, 이전 데이터가 잠깐이라도 보이는 것을 방지합니다.
+            resetForm(); 
+            
             try {
                 // 2026.05.28 1. 5개의 공통 코드 데이터를 병렬로 동시에 가져옵니다. (속도 최적화)
                 const [purpRes, estRes, corpRes, repRes, workRes] = await Promise.all([
@@ -174,8 +222,11 @@ export default function VillageInfoCreate({
         };
 
         fetchVillageDetail();
-    }, [vilMngNo, currentTab]);
+    }, [vilMngNo]);
+    //}, [vilMngNo, currentTab]);
 
+
+    
        
     // Daum Postcode API 스크립트 동적 로드
     useEffect(() => {

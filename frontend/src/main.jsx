@@ -19,11 +19,8 @@ import { TabProvider } from './context/TabContext'; // 1. TabProvider 추가
 
 
 // 1. 데이터 가져오기 (json_script 방식)
-// const jsonData = document.getElementById('inertia-data')?.textContent;
-// const initialPage = jsonData ? JSON.parse(jsonData) : null;
-
-const jsonData = document.getElementById('inertia-data').textContent;
-const initialPage = JSON.parse(jsonData); // 이제 여기서 "undefined"가 아닌 객체가 나옵니다!
+const jsonData = document.getElementById('inertia-data')?.textContent;
+const initialPage = jsonData ? JSON.parse(jsonData) : null;
 
 createInertiaApp({
   page: initialPage,

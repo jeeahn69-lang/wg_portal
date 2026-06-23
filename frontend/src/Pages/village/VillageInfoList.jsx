@@ -18,7 +18,10 @@ export default function VillageInfoList({ regions = [] }) {
     const itemsPerPage = 10; 
     const pageBlockSize = 10; 
 
-    // 실시간 DB 데이터 요청 API 통신 함수
+    // 조회된 탭의 내용 그대로 유지 [2026.06.23] - 검색 조건이 변경되어도 현재 탭의 내용은 유지하도록 개선
+    const STORAGE_KEY = 'villageInfoListState';
+
+    // 사용자 입력 검색 함수 (조회하기 버튼, Enter 키에서 호출)
     const handleSearch = useCallback(async () => {
         setIsLoading(true);
         try {
@@ -36,6 +39,20 @@ export default function VillageInfoList({ regions = [] }) {
             
             setFilteredData(dbData);
             setCurrentPage(1); 
+
+            // 상태를 localStorage에 저장하여 탭 간 이동 후에도 검색 결과 유지 [2026.06.23 개선]
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify({
+                    filteredData: dbData,
+                    currentPage: 1,
+                    selectedRegion,
+                    searchVillage,
+                    selectedCouncil
+                })
+            );
+            
+            
         } catch (error) {
             console.error("마을 데이터 로드 실패:", error);
             alert("서버에서 데이터를 불러오는 중 오류가 발생했습니다.");
@@ -44,10 +61,51 @@ export default function VillageInfoList({ regions = [] }) {
         }
     }, [selectedRegion, searchVillage, selectedCouncil]);
 
+    // // 2026.06.19 탭 캐싱 개선: 첫 마운트 시에만 데이터 로드, 이후는 상태 보존
+    // useEffect(() => {
+    //     // 초기 데이터 로드 (컴포넌트 마운트 시 한 번만 실행)
+    //     const loadInitialData = async () => {
+    //         setIsLoading(true);
+    //         try {
+    //             const response = await fetch(`/village/info-search-api/?region=전체&village=&council=전체`);
+    //             if (!response.ok) {
+    //                 throw new Error(`데이터베이스 통신 오류`);
+    //             }
+    //             const dbData = await response.json();
+    //             setFilteredData(dbData);
+    //         } catch (error) {
+    //             console.error("초기 마을 데이터 로드 실패:", error);
+    //         } finally {
+    //             setIsLoading(false);
+    //         }
+    //     };
+        
+    //     loadInitialData();
+    // }, []); // 빈 의존성 배열: 마운트 시 한 번만 실행
+
+    // useEffect(() => {setFilteredData([]);}, []); // 지역 또는 협의회 선택이 변경될 때마다 결과 초기화
+
+
+    // 컴포넌트 마운트 시 localStorage에서 상태 복원 [2026.06.23 개선]
     useEffect(() => {
-        handleSearch();
+    const savedState = localStorage.getItem(STORAGE_KEY);
+
+    if (savedState) {
+        try {
+            const state = JSON.parse(savedState);
+
+            setFilteredData(state.filteredData || []);
+            setCurrentPage(state.currentPage || 1);
+            setSelectedRegion(state.selectedRegion || '전체');
+            setSearchVillage(state.searchVillage || '');
+            setSelectedCouncil(state.selectedCouncil || '전체');
+        } catch (e) {
+            console.error('저장된 상태 복원 실패', e);
+        }
+        }
     }, []);
 
+    
     // 페이지네이션 데이터 계산 로직
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -169,9 +227,10 @@ export default function VillageInfoList({ regions = [] }) {
                                         key={item.vil_idx} 
                                         className="hover:bg-blue-50/50 transition-colors group cursor-pointer" 
                                         onClick={() => addTab({ 
-                                            id: `village-info-${item.vil_idx}`, 
+                                            // id: `village-info-${item.vil_idx}`, 
+                                            id: `village_create_${item.vil_idx}`, 
                                             title: `${item.village} 정보`, 
-                                            path: '/village/card/', 
+                                            path: `/village/create/?vil_idx=${item.vil_idx}&vil_mng_no=${item.vil_mng_no}`, 
                                             villageName: item.village,
                                             vilMngNo: item.vil_mng_no   
                                         })}
