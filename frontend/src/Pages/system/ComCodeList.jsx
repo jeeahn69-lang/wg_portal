@@ -37,7 +37,11 @@ export default function ComCodeManager({ masterList = [], detailList = [], searc
             const response = await fetch(`/system/comcode/detail/${masterCode}/`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
-            setDetailsData(data.success ? data.data : []);
+            // setDetailsData(data.success ? data.data : []);
+
+            // [2026.06.24] 데이터가 배열인지 확인하고, 배열이 아닌 경우에는 data.success를 확인하여 데이터를 설정합니다.
+            setDetailsData(Array.isArray(data) ? data : (data.success ? data.data : []));
+
         } catch (error) {
             console.error('Failed to fetch detail codes:', error);
             setDetailsData([]);

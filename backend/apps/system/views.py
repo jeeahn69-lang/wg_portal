@@ -73,7 +73,7 @@ def get_detail_codes(request, master_cd):
     try:
         # master_cd에 해당하는 상세 코드 조회
         detail_codes = CommonCodeDtl.objects.filter(master_cd_id=master_cd).values(
-            'dtl_cd', 'dtl_nm', 'sort_ord'
+            'dtl_idx','dtl_cd', 'dtl_nm', 'sort_ord', 'use_yn'
         ).order_by('sort_ord')
 
         # 데이터가 없을 경우

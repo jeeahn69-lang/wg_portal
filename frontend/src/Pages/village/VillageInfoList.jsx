@@ -232,7 +232,7 @@ export default function VillageInfoList({ regions = [] }) {
                                             title: `${item.village} 정보`, 
                                             path: `/village/create/?vil_idx=${item.vil_idx}&vil_mng_no=${item.vil_mng_no}`, 
                                             villageName: item.village,
-                                            vilMngNo: item.vil_mng_no   
+                                            vilMngNo: item.vil_mng_no
                                         })}
                                     >
                                         <td className="px-6 py-4 font-mono text-gray-400 text-sm font-bold">

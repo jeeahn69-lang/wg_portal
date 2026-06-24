@@ -9,6 +9,7 @@ export default function VillageInfoCreate({
 }) {
     const { openTabs, activeTabId } = useTabs();
     const currentTab = openTabs.find(tab => tab.id === activeTabId);
+
     // 2026.05.27 Props로 직접 넘어왔거나, 탭 객체(currentTab) 내부에 숨어있는 번호를 하나로 완벽하게 병합합니다.
     const vilMngNo = propsVilMngNo || currentTab?.vilMngNo || null;
 
@@ -83,6 +84,9 @@ export default function VillageInfoCreate({
     const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 팝업 상태
     const [isLoadingDetail, setIsLoadingDetail] = useState(false); // 상세조회 로딩 상태
 
+    // 2026.06.24 추가: DB에서 조인한 객체에 조회 데이터 저장하고 다시 클릭하면 DB를 호출하지 않는 방식
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
+
     // 2026.06.19 수정: resetForm 함수를 모든 상태 선언 뒤로 이동 (React Hook 에러 해결)
     const resetForm = () => {
         setVillageName('');
@@ -118,24 +122,38 @@ export default function VillageInfoCreate({
     };
 
 
-   
+    // 2026.06.24 useEffect 훅을 사용하여 vilMngNo가 변경될 때마다 상세조회 로직을 실행합니다. 
+    // 단, isDataLoaded 플래그를 확인하여 이미 조회된 경우에는 DB 호출을 건너뜁니다.
 
-    // 🔥 [추가] 목록에서 행 클릭 시 (%s 파라미터 쿼리 결과) 데이터를 받아와 화면 상태에 채워주는 훅
     useEffect(() => {
 
-        if (!isDetailMode) {
-            return; // 신규 등록 모드인 경우 상세조회 로직을 건너뜁니다.
-        }
+    if (!isDetailMode) {
+        return;
+    }
 
-        const fetchVillageDetail = async () => {
-            
-            setIsLoadingDetail(true);
+    const fetchVillageDetail = async () => {
 
-            // [2026.06.05] 상세조회 시작 시점에 모든 상태를 초기화하여, 이전 데이터가 잠깐이라도 보이는 것을 방지합니다.
-            resetForm(); 
-            
-            try {
-                // 2026.05.28 1. 5개의 공통 코드 데이터를 병렬로 동시에 가져옵니다. (속도 최적화)
+        setIsLoadingDetail(true);
+
+        try {
+
+            // ========================================
+            // 1. 공통코드 캐시 확인
+            // ========================================
+            const commonCodeCache = sessionStorage.getItem('village_common_codes');
+
+            if (commonCodeCache) {
+
+                const commonCodes = JSON.parse(commonCodeCache);
+
+                setPurposeOptions(commonCodes.purposeOptions || []);
+                setEstablishmentTypeOptions(commonCodes.establishmentTypeOptions || []);
+                setCorporationTypeOptions(commonCodes.corporationTypeOptions || []);
+                setRepactivityTypeOptions(commonCodes.repactivityTypeOptions || []);
+                setWorkactivityTypeOptions(commonCodes.workactivityTypeOptions || []);
+
+            } else {
+
                 const [purpRes, estRes, corpRes, repRes, workRes] = await Promise.all([
                     fetch('/village/purposes/'),
                     fetch('/village/establishment-types/'),
@@ -144,86 +162,270 @@ export default function VillageInfoCreate({
                     fetch('/village/workactivity-types/')
                 ]);
 
-                // 공통 코드 데이터 파싱 및 매핑 헬퍼 함수
                 const parseOptions = async (res) => {
                     if (!res.ok) return [];
+
                     const data = await res.json();
+
                     return (Array.isArray(data) ? data : []).map(item => ({
                         code: item.code ?? item.dtl_cd,
                         name: item.name ?? item.dtl_nm,
                     }));
                 };
 
-                // 2026.05.28 공통 코드 파싱한 데이터를 옵션 상태에 저장합니다.
-                setPurposeOptions(await parseOptions(purpRes));
-                setEstablishmentTypeOptions(await parseOptions(estRes));
-                setCorporationTypeOptions(await parseOptions(corpRes));
-                setRepactivityTypeOptions(await parseOptions(repRes));
-                setWorkactivityTypeOptions(await parseOptions(workRes));
-                
-                // 2026.05.28 2. 기존 마을 데이터 상세조회 및 바인딩
-                if (vilMngNo) {
-                    const response = await fetch(`/village/info-detail-api/${vilMngNo}/`);
-                    if (!response.ok) throw new Error("상세조회 실패");
-                    const data = await response.json();
+                const purposeOptions = await parseOptions(purpRes);
+                const establishmentTypeOptions = await parseOptions(estRes);
+                const corporationTypeOptions = await parseOptions(corpRes);
+                const repactivityTypeOptions = await parseOptions(repRes);
+                const workactivityTypeOptions = await parseOptions(workRes);
 
-                    // 1. 마을 기본정보 바인딩
-                    setVillageName(data.vil_nm || '');
-                    setJibeonAddress(data.vil_jibun_addr || ''); // 2026.06.04 지번주소 추가
-                    setEubmyeonName(data.eubmyeon_nm || ''); // 2026.06.04 읍면명 추가
-                    setCorpName(data.comp_corp_nm || '');
-                    setBusinessAddress(data.biz_addr || '');
-                    setHouseholds(data.household_cnt ? String(data.household_cnt) : '0');
-                    setPopulation(data.resident_cnt ? String(data.resident_cnt) : '0');
-                    setLeaderName(data.leader_nm || '');
-                    
-                    // 2. 대표자 정보 바인딩
-                    setOwnerName(data.owner_nm || '');
-                    setPhoneRep(data.owner_phone_no ? data.owner_phone_no.replace(/\D/g, '') : '');
-                    setBirthDateRep(data.owner_birth_dt ? data.owner_birth_dt.replace(/\D/g, '') : '');
-                    setOwnerGender(data.owner_gender || '남성');
-                    setEmailRep(data.owner_email || '');
-                    
-                    // 3. 실무자 정보 바인딩 (새 확장 쿼리 데이터 매핑)
-                    setWorkerName(data.worker_nm || '');
-                    setPhoneWorker(data.worker_phone_no ? data.worker_phone_no.replace(/\D/g, '') : '');
-                    setBirthDateWorker(data.worker_birth_dt ? data.worker_birth_dt.replace(/\D/g, '') : '');
-                    setWorkerGender(data.worker_gender || '여성');
-                    setEmailWorker(data.worker_email || '');
+                setPurposeOptions(purposeOptions);
+                setEstablishmentTypeOptions(establishmentTypeOptions);
+                setCorporationTypeOptions(corporationTypeOptions);
+                setRepactivityTypeOptions(repactivityTypeOptions);
+                setWorkactivityTypeOptions(workactivityTypeOptions);
 
-                    // 4. 설립 및 기타 운영 상태 바인딩 2026.05.28 [신규 추가]
-                    setEstablishmentDate(data.inst_dt ? data.inst_dt.replace(/\D/g, '') : ''); // 설립일자('-' 제거 후 세팅)
-                    setMainProducts(data.main_prod_cn || ''); // 주요제품내용 상태 세팅
-                    setMainActivities(data.main_act_cn || ''); // 주요활동내용 상태 세팅
+                sessionStorage.setItem(
+                    'village_common_codes',
+                    JSON.stringify({
+                        purposeOptions,
+                        establishmentTypeOptions,
+                        corporationTypeOptions,
+                        repactivityTypeOptions,
+                        workactivityTypeOptions
+                    })
+                );
+            }
 
-                    // 5. 하단 협의회 및 홈페이지 정보 바인딩
-                    setHomepageYn(data.homepage_yn === 'Y' ? '있음' : '없음');
-                    setHomepageUrl(data.homepage_url || '');
-                    setIsYn(data.council_mbr_yn === 'Y' ? '예' : '아니오');
-                    setMemberOutDate(data.whdw_dt ? data.whdw_dt.replace(/\D/g, '') : '');
+            // ========================================
+            // 2. 상세정보 캐시 확인
+            // ========================================
+            if (vilMngNo) {
 
-                    // [핵심] 위에서 공통코드를 셋팅했으므로, DB값이 들어가는 순간 콤보박스에 자동 매핑됩니다.
-                    setSelectedPurpose(data.inst_purp_cd || ''); 
-                    setSelectedEstablishmentType(data.inst_type_cd || '');    
-                    setSelectedCorporationType(data.corp_type_cd || '');      
-                    setSelectedRepactivityType(data.rep_act_type_cd || '');
-                    setSelectedWorkactivityType(data.wrk_act_type_cd || '');
+                const cacheKey = `village_detail_${vilMngNo}`;
+                const cachedData = sessionStorage.getItem(cacheKey);
+
+                let data;
+
+                if (cachedData) {
+
+                    console.log('캐시 데이터 사용:', vilMngNo);
+
+                    data = JSON.parse(cachedData);
+
                 } else {
-                setVillageName(currentTab?.villageName || '신규 마을');
-                // setHouseholds('45');
-                // setPopulation('112');
+
+                    console.log('DB 조회:', vilMngNo);
+
+                    const response = await fetch(
+                        `/village/info-detail-api/${vilMngNo}/`
+                    );
+
+                    if (!response.ok) {
+                        throw new Error("상세조회 실패");
+                    }
+
+                    data = await response.json();
+
+                    sessionStorage.setItem(
+                        cacheKey,
+                        JSON.stringify(data)
+                    );
                 }
 
-            } catch (error) {
-                console.error("마을 데이터 상세 바인딩 실패:", error);
-            } finally {
-                setIsLoadingDetail(false);
-            }
-        };
+                // ========================================
+                // 3. 화면 바인딩
+                // ========================================
 
-        fetchVillageDetail();
-    }, [vilMngNo]);
-    //}, [vilMngNo, currentTab]);
+                setVillageName(data.vil_nm || '');
+                setJibeonAddress(data.vil_jibun_addr || '');
+                setEubmyeonName(data.eubmyeon_nm || '');
+                setCorpName(data.comp_corp_nm || '');
+                setBusinessAddress(data.biz_addr || '');
+                setHouseholds(data.household_cnt ? String(data.household_cnt) : '0');
+                setPopulation(data.resident_cnt ? String(data.resident_cnt) : '0');
+                setLeaderName(data.leader_nm || '');
+
+                setOwnerName(data.owner_nm || '');
+                setPhoneRep(data.owner_phone_no ? data.owner_phone_no.replace(/\D/g, '') : '');
+                setBirthDateRep(data.owner_birth_dt ? data.owner_birth_dt.replace(/\D/g, '') : '');
+                setOwnerGender(data.owner_gender || '남성');
+                setEmailRep(data.owner_email || '');
+
+                setWorkerName(data.worker_nm || '');
+                setPhoneWorker(data.worker_phone_no ? data.worker_phone_no.replace(/\D/g, '') : '');
+                setBirthDateWorker(data.worker_birth_dt ? data.worker_birth_dt.replace(/\D/g, '') : '');
+                setWorkerGender(data.worker_gender || '여성');
+                setEmailWorker(data.worker_email || '');
+
+                setEstablishmentDate(
+                    data.inst_dt ? data.inst_dt.replace(/\D/g, '') : ''
+                );
+
+                setMainProducts(data.main_prod_cn || '');
+                setMainActivities(data.main_act_cn || '');
+
+                setHomepageYn(
+                    data.homepage_yn === 'Y' ? '있음' : '없음'
+                );
+
+                setHomepageUrl(data.homepage_url || '');
+
+                setIsYn(
+                    data.council_mbr_yn === 'Y' ? '예' : '아니오'
+                );
+
+                setMemberOutDate(
+                    data.whdw_dt ? data.whdw_dt.replace(/\D/g, '') : ''
+                );
+
+                setSelectedPurpose(data.inst_purp_cd || '');
+                setSelectedEstablishmentType(data.inst_type_cd || '');
+                setSelectedCorporationType(data.corp_type_cd || '');
+                setSelectedRepactivityType(data.rep_act_type_cd || '');
+                setSelectedWorkactivityType(data.wrk_act_type_cd || '');
+
+            } else {
+
+                setVillageName(
+                    currentTab?.villageName || '신규 마을'
+                );
+            }
+
+        } catch (error) {
+
+            console.error(
+                "마을 데이터 상세 바인딩 실패:",
+                error
+            );
+
+        } finally {
+
+            setIsLoadingDetail(false);
+        }
+    };
+
+    fetchVillageDetail();
+
+}, [vilMngNo]);
+
+
+   
+
+    // // 🔥 [추가] 목록에서 행 클릭 시 (%s 파라미터 쿼리 결과) 데이터를 받아와 화면 상태에 채워주는 훅
+    // useEffect(() => {
+
+    //     if (!isDetailMode) {
+    //         return; // 신규 등록 모드인 경우 상세조회 로직을 건너뜁니다.
+    //     }
+
+    //     // [2026.06.24] 캐시 데이터 확인
+    //     const cacheKey = `village_detail_${vilMngNo}`;
+    //     const cachedData = sessionStorage.getItem(cacheKey);
+  
+
+
+
+
+    //     const fetchVillageDetail = async () => {
+            
+    //         setIsLoadingDetail(true);
+
+    //         // [2026.06.05] 상세조회 시작 시점에 모든 상태를 초기화하여, 이전 데이터가 잠깐이라도 보이는 것을 방지합니다.
+    //         resetForm(); 
+            
+    //         try {
+    //             // 2026.05.28 1. 5개의 공통 코드 데이터를 병렬로 동시에 가져옵니다. (속도 최적화)
+    //             const [purpRes, estRes, corpRes, repRes, workRes] = await Promise.all([
+    //                 fetch('/village/purposes/'),
+    //                 fetch('/village/establishment-types/'),
+    //                 fetch('/village/corporation-types/'),
+    //                 fetch('/village/repactivity-types/'),
+    //                 fetch('/village/workactivity-types/')
+    //             ]);
+
+    //             // 공통 코드 데이터 파싱 및 매핑 헬퍼 함수
+    //             const parseOptions = async (res) => {
+    //                 if (!res.ok) return [];
+    //                 const data = await res.json();
+    //                 return (Array.isArray(data) ? data : []).map(item => ({
+    //                     code: item.code ?? item.dtl_cd,
+    //                     name: item.name ?? item.dtl_nm,
+    //                 }));
+    //             };
+
+    //             // 2026.05.28 공통 코드 파싱한 데이터를 옵션 상태에 저장합니다.
+    //             setPurposeOptions(await parseOptions(purpRes));
+    //             setEstablishmentTypeOptions(await parseOptions(estRes));
+    //             setCorporationTypeOptions(await parseOptions(corpRes));
+    //             setRepactivityTypeOptions(await parseOptions(repRes));
+    //             setWorkactivityTypeOptions(await parseOptions(workRes));
+                
+    //             // 2026.05.28 2. 기존 마을 데이터 상세조회 및 바인딩
+    //             if (vilMngNo) {
+    //                 const response = await fetch(`/village/info-detail-api/${vilMngNo}/`);
+    //                 if (!response.ok) throw new Error("상세조회 실패");
+    //                 const data = await response.json();
+
+    //                 // 1. 마을 기본정보 바인딩
+    //                 setVillageName(data.vil_nm || '');
+    //                 setJibeonAddress(data.vil_jibun_addr || ''); // 2026.06.04 지번주소 추가
+    //                 setEubmyeonName(data.eubmyeon_nm || ''); // 2026.06.04 읍면명 추가
+    //                 setCorpName(data.comp_corp_nm || '');
+    //                 setBusinessAddress(data.biz_addr || '');
+    //                 setHouseholds(data.household_cnt ? String(data.household_cnt) : '0');
+    //                 setPopulation(data.resident_cnt ? String(data.resident_cnt) : '0');
+    //                 setLeaderName(data.leader_nm || '');
+                    
+    //                 // 2. 대표자 정보 바인딩
+    //                 setOwnerName(data.owner_nm || '');
+    //                 setPhoneRep(data.owner_phone_no ? data.owner_phone_no.replace(/\D/g, '') : '');
+    //                 setBirthDateRep(data.owner_birth_dt ? data.owner_birth_dt.replace(/\D/g, '') : '');
+    //                 setOwnerGender(data.owner_gender || '남성');
+    //                 setEmailRep(data.owner_email || '');
+                    
+    //                 // 3. 실무자 정보 바인딩 (새 확장 쿼리 데이터 매핑)
+    //                 setWorkerName(data.worker_nm || '');
+    //                 setPhoneWorker(data.worker_phone_no ? data.worker_phone_no.replace(/\D/g, '') : '');
+    //                 setBirthDateWorker(data.worker_birth_dt ? data.worker_birth_dt.replace(/\D/g, '') : '');
+    //                 setWorkerGender(data.worker_gender || '여성');
+    //                 setEmailWorker(data.worker_email || '');
+
+    //                 // 4. 설립 및 기타 운영 상태 바인딩 2026.05.28 [신규 추가]
+    //                 setEstablishmentDate(data.inst_dt ? data.inst_dt.replace(/\D/g, '') : ''); // 설립일자('-' 제거 후 세팅)
+    //                 setMainProducts(data.main_prod_cn || ''); // 주요제품내용 상태 세팅
+    //                 setMainActivities(data.main_act_cn || ''); // 주요활동내용 상태 세팅
+
+    //                 // 5. 하단 협의회 및 홈페이지 정보 바인딩
+    //                 setHomepageYn(data.homepage_yn === 'Y' ? '있음' : '없음');
+    //                 setHomepageUrl(data.homepage_url || '');
+    //                 setIsYn(data.council_mbr_yn === 'Y' ? '예' : '아니오');
+    //                 setMemberOutDate(data.whdw_dt ? data.whdw_dt.replace(/\D/g, '') : '');
+
+    //                 // [핵심] 위에서 공통코드를 셋팅했으므로, DB값이 들어가는 순간 콤보박스에 자동 매핑됩니다.
+    //                 setSelectedPurpose(data.inst_purp_cd || ''); 
+    //                 setSelectedEstablishmentType(data.inst_type_cd || '');    
+    //                 setSelectedCorporationType(data.corp_type_cd || '');      
+    //                 setSelectedRepactivityType(data.rep_act_type_cd || '');
+    //                 setSelectedWorkactivityType(data.wrk_act_type_cd || '');
+    //                 // 2026.06.24 조회 완료 후 재조회 방지 플래그 활성화
+    //                 // setIsDataLoaded(true);
+    //             } else {
+    //             setVillageName(currentTab?.villageName || '신규 마을');
+    //             // setHouseholds('45');
+    //             // setPopulation('112');
+    //             }
+
+    //         } catch (error) {
+    //             console.error("마을 데이터 상세 바인딩 실패:", error);
+    //         } finally {
+    //             setIsLoadingDetail(false);
+    //         }
+    //     };
+
+    //     fetchVillageDetail();
+    // }, [vilMngNo]);
+    // //}, [vilMngNo, currentTab]);
 
 
     
